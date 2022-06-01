@@ -1,0 +1,85 @@
+version: '3.7'
+
+services:
+  database:
+    container_name: database
+    image: postgres:14.2-alpine
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    env_file:
+      - ./.env
+    restart: always
+
+  backend:
+    container_name: backend
+    build: ./django_backend
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - static-volume:/home/app/backend/staticfiles
+    expose:
+      - 8000
+    env_file:
+      - ./.env
+    depends_on:
+      - database
+    restart: always
+
+  server:
+    container_name: nginx
+    build: ./nginx
+    volumes:
+      - static-volume:/home/app/backend/staticfiles
+    ports:
+      - '80:80'
+    restart: always
+
+  telegram:
+    container_name: telegram
+    build: ./django_backend
+    command: python manage.py telegram
+    env_file:
+      - ./.env
+    depends_on:
+      - database
+      - backend
+    restart: always
+
+  redis:
+    container_name: redis
+    image: redis:7.0.0-alpine
+    volumes:
+      - redis-data:/data
+    restart: always
+
+  celery:
+    container_name: celery
+    build: ./django_backend
+    command: celery -A config worker --loglevel=INFO
+    env_file:
+      - ./.env
+    depends_on:
+      - database
+      - redis
+    restart: always
+
+  scheduler:
+    container_name: scheduler
+    build: ./django_backend
+    command: celery -A config beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    env_file:
+      - ./.env
+    depends_on:
+      - database
+      - redis
+      - backend
+    restart: always
+
+volumes:
+  postgres-data:
+  redis-data:
+  static-volume:
