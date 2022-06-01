@@ -21,6 +21,7 @@ services:
              gunicorn config.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - static-volume:/home/app/backend/staticfiles
+      - media-volume:/home/app/backend/media
     expose:
       - 8000
     env_file:
@@ -83,3 +84,4 @@ volumes:
   postgres-data:
   redis-data:
   static-volume:
+  media-volume:

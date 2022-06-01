@@ -1,0 +1,996 @@
+[
+{
+    "model": "playtime.dayoftheweek",
+    "pk": 1,
+    "fields": {
+        "title": "Понедельник"
+    }
+},
+{
+    "model": "playtime.dayoftheweek",
+    "pk": 2,
+    "fields": {
+        "title": "Вторник"
+    }
+},
+{
+    "model": "playtime.dayoftheweek",
+    "pk": 3,
+    "fields": {
+        "title": "Среда"
+    }
+},
+{
+    "model": "playtime.dayoftheweek",
+    "pk": 4,
+    "fields": {
+        "title": "Четверг"
+    }
+},
+{
+    "model": "playtime.dayoftheweek",
+    "pk": 5,
+    "fields": {
+        "title": "Пятница"
+    }
+},
+{
+    "model": "playtime.dayoftheweek",
+    "pk": 6,
+    "fields": {
+        "title": "Суббота"
+    }
+},
+{
+    "model": "playtime.dayoftheweek",
+    "pk": 7,
+    "fields": {
+        "title": "Воскресенье"
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 1,
+    "fields": {
+        "time": "08:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 2,
+    "fields": {
+        "time": "09:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 3,
+    "fields": {
+        "time": "10:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 4,
+    "fields": {
+        "time": "11:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 5,
+    "fields": {
+        "time": "12:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 6,
+    "fields": {
+        "time": "13:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 7,
+    "fields": {
+        "time": "14:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 8,
+    "fields": {
+        "time": "15:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 9,
+    "fields": {
+        "time": "16:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 10,
+    "fields": {
+        "time": "17:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 11,
+    "fields": {
+        "time": "18:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 12,
+    "fields": {
+        "time": "19:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 13,
+    "fields": {
+        "time": "20:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 14,
+    "fields": {
+        "time": "21:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 15,
+    "fields": {
+        "time": "22:00:00",
+        "day_of_the_week": 1,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 16,
+    "fields": {
+        "time": "08:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 17,
+    "fields": {
+        "time": "09:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 18,
+    "fields": {
+        "time": "10:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 19,
+    "fields": {
+        "time": "11:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 20,
+    "fields": {
+        "time": "12:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 21,
+    "fields": {
+        "time": "13:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 22,
+    "fields": {
+        "time": "14:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 23,
+    "fields": {
+        "time": "15:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 24,
+    "fields": {
+        "time": "16:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 25,
+    "fields": {
+        "time": "17:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 26,
+    "fields": {
+        "time": "18:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 27,
+    "fields": {
+        "time": "19:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 28,
+    "fields": {
+        "time": "20:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 29,
+    "fields": {
+        "time": "21:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 30,
+    "fields": {
+        "time": "22:00:00",
+        "day_of_the_week": 2,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 31,
+    "fields": {
+        "time": "08:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 32,
+    "fields": {
+        "time": "09:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 33,
+    "fields": {
+        "time": "10:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 34,
+    "fields": {
+        "time": "11:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 35,
+    "fields": {
+        "time": "12:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 36,
+    "fields": {
+        "time": "13:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 37,
+    "fields": {
+        "time": "14:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 38,
+    "fields": {
+        "time": "15:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 39,
+    "fields": {
+        "time": "16:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 40,
+    "fields": {
+        "time": "17:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 41,
+    "fields": {
+        "time": "18:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 42,
+    "fields": {
+        "time": "19:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 43,
+    "fields": {
+        "time": "20:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 44,
+    "fields": {
+        "time": "21:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 45,
+    "fields": {
+        "time": "22:00:00",
+        "day_of_the_week": 3,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 46,
+    "fields": {
+        "time": "08:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 47,
+    "fields": {
+        "time": "09:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 48,
+    "fields": {
+        "time": "10:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 49,
+    "fields": {
+        "time": "11:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 50,
+    "fields": {
+        "time": "12:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 51,
+    "fields": {
+        "time": "13:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 52,
+    "fields": {
+        "time": "14:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 53,
+    "fields": {
+        "time": "15:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 54,
+    "fields": {
+        "time": "16:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 55,
+    "fields": {
+        "time": "17:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 56,
+    "fields": {
+        "time": "18:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 57,
+    "fields": {
+        "time": "19:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 58,
+    "fields": {
+        "time": "20:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 59,
+    "fields": {
+        "time": "21:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 60,
+    "fields": {
+        "time": "22:00:00",
+        "day_of_the_week": 4,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 61,
+    "fields": {
+        "time": "08:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 62,
+    "fields": {
+        "time": "09:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 63,
+    "fields": {
+        "time": "10:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 64,
+    "fields": {
+        "time": "11:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 65,
+    "fields": {
+        "time": "12:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 66,
+    "fields": {
+        "time": "13:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 67,
+    "fields": {
+        "time": "14:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 68,
+    "fields": {
+        "time": "15:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 69,
+    "fields": {
+        "time": "16:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 70,
+    "fields": {
+        "time": "17:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 71,
+    "fields": {
+        "time": "18:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 72,
+    "fields": {
+        "time": "19:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 73,
+    "fields": {
+        "time": "20:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 74,
+    "fields": {
+        "time": "21:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 75,
+    "fields": {
+        "time": "22:00:00",
+        "day_of_the_week": 5,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 76,
+    "fields": {
+        "time": "08:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 77,
+    "fields": {
+        "time": "09:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 78,
+    "fields": {
+        "time": "10:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 79,
+    "fields": {
+        "time": "11:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 80,
+    "fields": {
+        "time": "12:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 81,
+    "fields": {
+        "time": "13:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 82,
+    "fields": {
+        "time": "14:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 83,
+    "fields": {
+        "time": "15:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 84,
+    "fields": {
+        "time": "16:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 85,
+    "fields": {
+        "time": "17:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 86,
+    "fields": {
+        "time": "18:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 87,
+    "fields": {
+        "time": "19:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 88,
+    "fields": {
+        "time": "20:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 89,
+    "fields": {
+        "time": "21:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 90,
+    "fields": {
+        "time": "22:00:00",
+        "day_of_the_week": 6,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 91,
+    "fields": {
+        "time": "08:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 92,
+    "fields": {
+        "time": "09:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 93,
+    "fields": {
+        "time": "10:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 94,
+    "fields": {
+        "time": "11:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 95,
+    "fields": {
+        "time": "12:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 96,
+    "fields": {
+        "time": "13:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 97,
+    "fields": {
+        "time": "14:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 98,
+    "fields": {
+        "time": "15:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 99,
+    "fields": {
+        "time": "16:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 100,
+    "fields": {
+        "time": "17:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 101,
+    "fields": {
+        "time": "18:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 102,
+    "fields": {
+        "time": "19:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 103,
+    "fields": {
+        "time": "20:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 104,
+    "fields": {
+        "time": "21:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+},
+{
+    "model": "playtime.usertime",
+    "pk": 105,
+    "fields": {
+        "time": "22:00:00",
+        "day_of_the_week": 7,
+        "users": []
+    }
+}
+]
