@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
     'django_celery_beat',
     'corsheaders',
+    'import_export',
 
     'accounts.apps.AccountsConfig',
     'playtime.apps.PlaytimeConfig',
