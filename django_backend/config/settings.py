@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'arenas.apps.ArenasConfig',
     'games.apps.GamesConfig',
     'characteristics.apps.CharacteristicsConfig',
+    'knowledges.apps.KnowledgesConfig',
     'telegrambot.apps.TelegrambotConfig',
 ]
 
