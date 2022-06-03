@@ -16,6 +16,9 @@ class Knowledge(models.Model):
     error_phone_number = models.CharField(max_length=128, verbose_name='Ошибка номера телефона')
     error_username = models.CharField(max_length=128, verbose_name='Ошибка имени и фамилии')
     error_date_of_birth = models.CharField(max_length=128, verbose_name='Ошибка даты рождения')
+    error_city = models.CharField(max_length=128, verbose_name='Ошибка города')
+
+    success_reg = models.TextField(verbose_name='Успешная регистрация')
 
     play_skill_params = models.CharField(max_length=128, verbose_name='Уровни игры')
 
