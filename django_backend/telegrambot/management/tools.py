@@ -1,9 +1,31 @@
-from telegram import InlineKeyboardButton
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardMarkup
 
 import datetime
 import json
 
+from telegram.ext import CallbackContext
+
+from characteristics.models import Characteristic, UserCharacteristic
 from knowledges.models import Knowledge
+from playtime.models import UserTime, DayOfTheWeek
+from telegrambot.models import TelegramUser
+
+
+class ProfileStatus:
+    ASK_PHONE = 0
+    REG_PHONE = 1
+    ASK_NAME = 2
+    REG_NAME = 3
+    ASK_BIRTHDAY = 4
+    REG_BIRTHDAY = 5
+    ASK_CITY = 6
+    REG_CITY = 7
+    ASK_LEVEL = 8
+    REG_LEVEL = 9
+    ASK_DAY = 10
+    ASK_HOUR = 11
+
+    DISTRIBUTE = 12
 
 
 def prepare_inline_keyboard(data, btns_per_line: int, callback_name: str):
@@ -67,3 +89,151 @@ def get_menu_keyboard():
     ]
 
     return keyboard
+
+
+def get_profile_keyboard():
+    """Возвращает список с кнопками меню профиля"""
+
+    buttons = Knowledge.objects.get(language='RU')
+
+    keyboard = [
+        [buttons.btn_edit_name, buttons.btn_edit_date_of_birth],
+        [buttons.btn_edit_city, buttons.btn_edit_phone],
+        [buttons.btn_edit_level, buttons.btn_edit_playtime],
+        [buttons.btn_back_menu]
+    ]
+
+    return keyboard
+
+
+def time_day(update: Update, context: CallbackContext):
+    _days = DayOfTheWeek.objects.all()
+
+    days_keyboard = prepare_inline_keyboard(_days, 1, "day")
+    days_keyboard.append([InlineKeyboardButton("CONTINUE", callback_data=create_callback("skip", ""))])
+
+    markup = InlineKeyboardMarkup(days_keyboard)
+
+    update.effective_message.reply_text(Knowledge.objects.get(language='RU').reg_playtime, reply_markup=markup)
+
+
+def time_selected(user, text_prefix, update: Update, context: CallbackContext):
+    message = update.callback_query.message
+    message.edit_reply_markup(None)
+
+    time_text = '\n\nВыбрано:'
+
+    for user_time in user.times.all():
+        day_of_the_week = user_time.day_of_the_week.title
+        select_time = user_time.time.strftime("%H:%M")
+
+        time_text += f'\n{text_prefix.get("selected")} {day_of_the_week} {select_time}'
+
+    message.edit_text(Knowledge.objects.get(language='RU').reg_playtime + time_text)
+
+
+def time_hour(user, update: Update, context: CallbackContext):
+    callback_data = get_callback_as_dict(update.callback_query.data)
+    user_data = context.user_data
+
+    message = update.callback_query.message
+
+    text_prefix = {
+        'selected': Knowledge.objects.get(language='RU').time_select_emoji,
+        'unselected': Knowledge.objects.get(language='RU').time_unselect_emoji
+    }
+
+    if callback_data.get('callback') == 'skip':
+        time_selected(user, text_prefix, update, context)
+        return True
+
+    if callback_data.get('callback') == 'day':
+        if context.user_data.get('day') == callback_data.get('id'):
+            context.user_data['day'] = None
+        else:
+            context.user_data['day'] = callback_data.get('id')
+
+    _days = DayOfTheWeek.objects.all()
+
+    # Создаем клавиатуру
+    days_keyboard = []
+
+    for i in range(len(_days)):
+        days_keyboard.append([InlineKeyboardButton(_days[i].title, callback_data=create_callback('day', _days[i].id))])
+
+        if str(_days[i].id) == str(user_data['day']):
+            _hours = UserTime.objects.filter(day_of_the_week_id=_days[i].id).all()
+            line = []
+
+            # Количество кнопок в ряду (для часов)
+            btns_per_line = 5
+
+            for j in range(len(_hours)):
+                _prefix = text_prefix.get('unselected')
+
+                user_selected_this_hour = user in _hours[j].users.all()
+
+                if callback_data.get('callback') == 'hour':
+                    if callback_data.get('id') == _hours[j].id:
+                        if user_selected_this_hour:
+                            _hours[j].users.remove(user)
+                            user_selected_this_hour = False
+                        else:
+                            _hours[j].users.add(user)
+                            user_selected_this_hour = True
+
+                if user_selected_this_hour:
+                    _prefix = text_prefix.get('selected')
+
+                line.append(InlineKeyboardButton(_prefix + _hours[j].time.strftime('%H:%M'),
+                                                 callback_data=create_callback('hour', _hours[j].id)))
+
+                if (j + 1) % btns_per_line == 0:
+                    days_keyboard.append(line)
+                    line = []
+
+            days_keyboard.append(line)
+
+    days_keyboard.append([InlineKeyboardButton("CONTINUE", callback_data=create_callback('skip', 'skip'))])
+
+    markup = InlineKeyboardMarkup(days_keyboard)
+    message.edit_reply_markup(markup)
+    return False
+
+
+def level_markup() -> InlineKeyboardMarkup:
+    _levels = Knowledge.objects.get(language='RU').play_skill_params.strip().split(',')
+
+    markup = InlineKeyboardMarkup.from_row(
+        [InlineKeyboardButton(_levels[i], callback_data=create_callback('level', i)) for i in range(len(_levels))]
+    )
+    return markup
+
+
+def set_user_level(user, update: Update):
+    callback_data = get_callback_as_dict(update.callback_query.data)
+    level_index = callback_data.get("id")
+
+    _levels = Knowledge.objects.get(language='RU').play_skill_params.strip().split(',')
+    level_value = _levels[level_index]
+
+    characteristic_obj, is_get = Characteristic.objects.get_or_create(title='Уровень игры')
+
+    if UserCharacteristic.objects.filter(user=user, characteristic=characteristic_obj).exists():
+        u_characteristic = UserCharacteristic.objects.get(user=user, characteristic=characteristic_obj)
+        u_characteristic.value = level_value
+        u_characteristic.save()
+    else:
+        UserCharacteristic.objects.create(
+            value=level_value,
+            characteristic=characteristic_obj,
+            user=user
+        )
+
+    message = update.callback_query.message
+    message.edit_text(Knowledge.objects.get(language='RU').reg_level + '\n\nВыбрано: ' + level_value)
+
+
+def send_menu(update: Update):
+    markup = ReplyKeyboardMarkup(get_menu_keyboard(), one_time_keyboard=False, resize_keyboard=True)
+    update.effective_message.reply_text(Knowledge.objects.get(language='RU').menu_message_text, reply_markup=markup)
