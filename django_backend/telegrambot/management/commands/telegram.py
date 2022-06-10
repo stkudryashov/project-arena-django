@@ -2,21 +2,26 @@ from django.core.management.base import BaseCommand
 
 from django.conf import settings
 
-from telegram import Update
-from telegram.ext import Updater, Filters, CallbackContext, Defaults
-from telegram.ext import MessageHandler
+from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
+from telegram.ext import CallbackContext, Defaults, CallbackQueryHandler
+
+from telegram.ext import (
+    Updater,
+    CommandHandler,
+    MessageHandler,
+    Filters,
+    ConversationHandler,
+)
 
 import logging
 import pytz
 
+from telegrambot.management.handlers import registration_handler
+from telegrambot.management.handlers import profile_handler
+
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-def start(update: Update, context: CallbackContext):
-    message = update.message.text
-    update.message.reply_text(message)
 
 
 class Command(BaseCommand):
@@ -26,7 +31,10 @@ class Command(BaseCommand):
 
         dispatcher = updater.dispatcher
 
-        dispatcher.add_handler(MessageHandler(Filters.text, start))
+        # dispatcher.add_handler(MessageHandler(Filters.text, start))
+
+        dispatcher.add_handler(registration_handler.get_registration_handler())
+        dispatcher.add_handler(profile_handler.get_profile_handler())
 
         updater.start_polling()
         updater.idle()

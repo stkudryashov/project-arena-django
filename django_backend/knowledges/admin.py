@@ -25,8 +25,16 @@ class KnowledgeAdmin(admin.ModelAdmin):
             'fields': ('time_unselect_emoji', 'time_select_emoji')
         }),
         ('Кнопки главного меню', {
-            'fields': ('btn_future_games', 'btn_my_games', 'btn_friends', 'btn_profile', 'btn_notifications')
-        })
+            'fields': ('menu_message_text', 'btn_future_games', 'btn_my_games', 'btn_friends',
+                       'btn_profile', 'btn_notifications')
+        }),
+        ('Кнопки меню редактирования', {
+            'fields': ('edit_message_text', 'btn_edit_phone', 'btn_edit_name', 'btn_edit_date_of_birth',
+                       'btn_edit_city', 'btn_edit_level', 'btn_edit_playtime')
+        }),
+        ('Дополнительные кнопки', {
+            'fields': ('btn_back_menu',)
+        }),
     )
 
     list_display = ('language',)
