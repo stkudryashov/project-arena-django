@@ -51,7 +51,7 @@ def reg_phone(update: Update, context: CallbackContext):
         return ask_name(update, context)
     else:
         message.reply_text(Knowledge.objects.get(language='RU').error_phone_number)
-        return ProfileStatus.ASK_PHONE
+        return ProfileStatus.REG_PHONE
 
 
 def ask_name(update: Update, context: CallbackContext):
@@ -167,6 +167,7 @@ def ask_time_hour(update: Update, context: CallbackContext):
     """Предлагает выбрать удобное время игры"""
 
     user = TelegramUser.objects.filter(telegram_id=update.effective_user.id).first()
+
     if user is None:
         return start_registration(update, context)
 
