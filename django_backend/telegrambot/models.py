@@ -25,3 +25,19 @@ class TelegramUser(models.Model):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+
+class Friendship(models.Model):
+    user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='friends', verbose_name='Пригласил')
+    friend = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, verbose_name='Друг')
+
+    def __str__(self):
+        return f'{self.user.telegram_username} - {self.friend.telegram_username}'
+
+    class Meta:
+        verbose_name = 'Друг пользователя'
+        verbose_name_plural = 'Друзья пользователей'
+
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'friend'], name='unique_user_friend'),
+        ]
