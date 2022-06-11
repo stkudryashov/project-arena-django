@@ -15,6 +15,7 @@ from telegrambot.management.tools import (
     is_phone_valid, is_birthday_valid,
     get_menu_keyboard,
     transform_date, time_day, time_hour, ProfileStatus, level_markup, set_user_level, send_menu, get_profile_keyboard,
+    is_name_valid,
 )
 
 from characteristics.models import Characteristic, UserCharacteristic
@@ -76,7 +77,7 @@ def change_name(update: Update, context: CallbackContext):
 
     message = update.effective_message
 
-    if len(message.text.split()) == 2:
+    if is_name_valid(message.text):
         user.username = message.text.title()
         user.save()
 

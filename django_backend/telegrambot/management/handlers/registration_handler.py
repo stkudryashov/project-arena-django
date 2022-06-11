@@ -14,7 +14,7 @@ from telegrambot.management.tools import (
     prepare_inline_keyboard,
     is_phone_valid, is_birthday_valid,
     get_menu_keyboard,
-    transform_date, time_day, time_hour, ProfileStatus, set_user_level, level_markup, send_menu,
+    transform_date, time_day, time_hour, ProfileStatus, set_user_level, level_markup, send_menu, is_name_valid,
 )
 
 from characteristics.models import Characteristic, UserCharacteristic
@@ -64,7 +64,7 @@ def ask_name(update: Update, context: CallbackContext):
 def reg_name(update: Update, context: CallbackContext):
     """Записывает имя пользователя во временную память"""
 
-    if len(update.message.text.split()) == 2:
+    if is_name_valid(update.message.text):
         context.user_data["name"] = update.message.text.title()
         return ask_birthday(update, context)
     else:

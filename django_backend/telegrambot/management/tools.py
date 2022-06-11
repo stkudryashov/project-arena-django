@@ -74,6 +74,15 @@ def is_phone_valid(number: str) -> bool:
     return False
 
 
+def is_name_valid(name: str) -> bool:
+    """Простая проверка имени пользователя на адекватность"""
+
+    if len(name.split()) == 2:
+        return True
+
+    return False
+
+
 def get_callback_as_dict(data) -> dict:
     return dict(json.loads(data))
 
