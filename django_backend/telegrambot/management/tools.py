@@ -2,6 +2,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKe
 
 import datetime
 import json
+import re
 
 from telegram.ext import CallbackContext
 
@@ -65,7 +66,21 @@ def is_birthday_valid(date: str, _format: str = "%d.%m.%Y") -> bool:
 def is_phone_valid(number: str) -> bool:
     """Проверяет если номер телефона указан корректно"""
 
-    return True
+    regex = r'^((\+7|7|8)+([0-9]){10})$'
+
+    if re.match(regex, number):
+        return True
+
+    return False
+
+
+def is_name_valid(name: str) -> bool:
+    """Простая проверка имени пользователя на адекватность"""
+
+    if len(name.split()) == 2:
+        return True
+
+    return False
 
 
 def get_callback_as_dict(data) -> dict:

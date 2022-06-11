@@ -14,7 +14,7 @@ from telegrambot.management.tools import (
     prepare_inline_keyboard,
     is_phone_valid, is_birthday_valid,
     get_menu_keyboard,
-    transform_date, time_day, time_hour, ProfileStatus, set_user_level, level_markup, send_menu,
+    transform_date, time_day, time_hour, ProfileStatus, set_user_level, level_markup, send_menu, is_name_valid,
 )
 
 from characteristics.models import Characteristic, UserCharacteristic
@@ -51,7 +51,7 @@ def reg_phone(update: Update, context: CallbackContext):
         return ask_name(update, context)
     else:
         message.reply_text(Knowledge.objects.get(language='RU').error_phone_number)
-        return ProfileStatus.ASK_PHONE
+        return ProfileStatus.REG_PHONE
 
 
 def ask_name(update: Update, context: CallbackContext):
@@ -64,8 +64,12 @@ def ask_name(update: Update, context: CallbackContext):
 def reg_name(update: Update, context: CallbackContext):
     """Записывает имя пользователя во временную память"""
 
-    context.user_data["name"] = update.message.text
-    return ask_birthday(update, context)
+    if is_name_valid(update.message.text):
+        context.user_data["name"] = update.message.text.title()
+        return ask_birthday(update, context)
+    else:
+        update.message.reply_text(Knowledge.objects.get(language='RU').error_username)
+        return ProfileStatus.REG_NAME
 
 
 def ask_birthday(update: Update, context: CallbackContext):
@@ -167,6 +171,7 @@ def ask_time_hour(update: Update, context: CallbackContext):
     """Предлагает выбрать удобное время игры"""
 
     user = TelegramUser.objects.filter(telegram_id=update.effective_user.id).first()
+
     if user is None:
         return start_registration(update, context)
 
