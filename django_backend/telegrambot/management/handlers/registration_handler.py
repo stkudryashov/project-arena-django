@@ -64,8 +64,12 @@ def ask_name(update: Update, context: CallbackContext):
 def reg_name(update: Update, context: CallbackContext):
     """Записывает имя пользователя во временную память"""
 
-    context.user_data["name"] = update.message.text
-    return ask_birthday(update, context)
+    if len(update.message.text.split()) == 2:
+        context.user_data["name"] = update.message.text.title()
+        return ask_birthday(update, context)
+    else:
+        update.message.reply_text(Knowledge.objects.get(language='RU').error_username)
+        return ProfileStatus.REG_NAME
 
 
 def ask_birthday(update: Update, context: CallbackContext):

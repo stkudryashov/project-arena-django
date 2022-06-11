@@ -50,7 +50,8 @@ def change_phone(update: Update, context: CallbackContext):
     if is_phone_valid(message.text):
         user.phone_number = message.text
         user.save()
-        message.reply_text("Телефон изменен")
+
+        message.reply_text('Телефон изменен')
         return ProfileStatus.DISTRIBUTE
 
     else:
@@ -67,20 +68,28 @@ def ask_name(update: Update, context: CallbackContext):
 
 def change_name(update: Update, context: CallbackContext):
     """Изменяет имя пользователя"""
+
     user = TelegramUser.objects.filter(telegram_id=update.effective_user.id).first()
+
     if user is None:
         return start_registration(update, context)
 
     message = update.effective_message
-    user.username = message.text
-    user.save()
-    message.reply_text("Имя изменено")
 
-    return ProfileStatus.DISTRIBUTE
+    if len(message.text.split()) == 2:
+        user.username = message.text.title()
+        user.save()
+
+        message.reply_text('Имя изменено')
+        return ProfileStatus.DISTRIBUTE
+    else:
+        update.message.reply_text(Knowledge.objects.get(language='RU').error_username)
+        return ProfileStatus.REG_NAME
 
 
 def ask_birthday(update: Update, context: CallbackContext):
     """Спрашивает день пользователя"""
+
     update.message.reply_text(Knowledge.objects.get(language='RU').reg_date_of_birth)
     return ProfileStatus.REG_BIRTHDAY
 
@@ -101,7 +110,7 @@ def change_birthday(update: Update, context: CallbackContext):
     user.date_of_birth = transform_date(message.text)
     user.save()
 
-    message.reply_text("День рождения изменен")
+    message.reply_text('День рождения изменен')
     return ProfileStatus.DISTRIBUTE
 
 
@@ -138,7 +147,7 @@ def change_city(update: Update, context: CallbackContext):
     user.city_id = city_id
     user.save()
 
-    message.reply_text("Город изменен")
+    message.reply_text('Город изменен')
     return ProfileStatus.DISTRIBUTE
 
 
@@ -156,7 +165,7 @@ def change_level(update: Update, context: CallbackContext):
     set_user_level(user, update)
     user.save()
 
-    update.effective_message.reply_text("Уровень изменен")
+    update.effective_message.reply_text('Уровень изменен')
     return ProfileStatus.DISTRIBUTE
 
 
@@ -171,7 +180,7 @@ def ask_time_hour(update: Update, context: CallbackContext):
         return start_registration(update, context)
 
     if time_hour(user, update, context):
-        update.effective_message.reply_text("Время изменено")
+        update.effective_message.reply_text('Время изменено')
         return ProfileStatus.DISTRIBUTE
 
 
@@ -200,7 +209,7 @@ def distribute(update: Update, context: CallbackContext):
     elif command == names[6]:
         return end_change(update, context)
 
-    message.reply_text("Выберите один из пунктов или вернитесь в меню")
+    message.reply_text('Выберите один из пунктов или вернитесь в меню')
 
 
 def end_change(update: Update, context: CallbackContext):
