@@ -10,8 +10,25 @@ class TelegramUserGameInLine(admin.TabularInline):
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
-    list_display = ('datetime', 'arena', 'status')
+    list_display = ('datetime', 'arena', 'status', 'free_space')
     inlines = [TelegramUserGameInLine]
+
+    fieldsets = (
+        ('Дата и время игры', {
+            'fields': ('datetime',)
+        }),
+        ('Количество мест', {
+            'fields': ('max_players', 'free_space')
+        }),
+        ('Цена участия', {
+            'fields': ('price',)
+        }),
+        ('Место проведения', {
+            'fields': ('arena', 'status')
+        })
+    )
+
+    readonly_fields = ('free_space',)
 
 
 @admin.register(TelegramUserGame)

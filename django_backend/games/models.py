@@ -5,6 +5,8 @@ from telegrambot.models import TelegramUser
 
 
 class Game(models.Model):
+    """Модель игры привязанной к определенному манежу"""
+
     datetime = models.DateTimeField(verbose_name='Дата')
     max_players = models.PositiveIntegerField(verbose_name='Количество мест')
     price = models.PositiveIntegerField(verbose_name='Стоимость участия')
@@ -19,6 +21,21 @@ class Game(models.Model):
 
     status = models.CharField(choices=GAME_STATUS, max_length=32, verbose_name='Статус')
 
+    @property
+    def free_space(self):
+        """Число свободных мест в игре"""
+
+        space = self.max_players - self.players.all().count()
+        return space if space > 0 else 0
+
+    free_space.fget.short_description = 'Свободно мест'
+
+    @property
+    def has_space(self):
+        """Есть ли свободные места в игре"""
+
+        return self.free_space > 0
+
     def __str__(self):
         return f'{self.datetime} - {self.arena}'
 
@@ -28,6 +45,8 @@ class Game(models.Model):
 
 
 class TelegramUserGame(models.Model):
+    """Промежуточная модель между пользователем и игрой"""
+
     user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, blank=True,
                              related_name='games', verbose_name='Пользователь')
 

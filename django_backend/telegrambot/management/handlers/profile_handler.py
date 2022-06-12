@@ -43,6 +43,7 @@ def ask_phone(update: Update, context: CallbackContext):
 
 def change_phone(update: Update, context: CallbackContext):
     user = TelegramUser.objects.filter(telegram_id=update.effective_user.id).first()
+
     if user is None:
         return start_registration(update, context)
 
@@ -57,7 +58,7 @@ def change_phone(update: Update, context: CallbackContext):
 
     else:
         message.reply_text(Knowledge.objects.get(language='RU').error_phone_number)
-        return ProfileStatus.ASK_PHONE
+        return ProfileStatus.REG_PHONE
 
 
 def ask_name(update: Update, context: CallbackContext):
@@ -99,6 +100,7 @@ def change_birthday(update: Update, context: CallbackContext):
     """Проверяет дату рождения на корректность и изменяет её"""
 
     user = TelegramUser.objects.filter(telegram_id=update.effective_user.id).first()
+
     if user is None:
         return start_registration(update, context)
 
@@ -177,6 +179,7 @@ def ask_time_day(update: Update, context: CallbackContext):
 
 def ask_time_hour(update: Update, context: CallbackContext):
     user = TelegramUser.objects.filter(telegram_id=update.effective_user.id).first()
+
     if user is None:
         return start_registration(update, context)
 
