@@ -18,6 +18,9 @@ import pytz
 
 from telegrambot.management.handlers import registration_handler
 from telegrambot.management.handlers import profile_handler
+from telegrambot.management.handlers import search_handler
+
+from knowledges.models import Knowledge
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -29,12 +32,15 @@ class Command(BaseCommand):
         defaults = Defaults(tzinfo=pytz.timezone('Europe/Moscow'))
         updater = Updater(settings.TELEGRAM_TOKEN, defaults=defaults)
 
-        dispatcher = updater.dispatcher
+        buttons = Knowledge.objects.get(language='RU')
 
-        # dispatcher.add_handler(MessageHandler(Filters.text, start))
+        dispatcher = updater.dispatcher
 
         dispatcher.add_handler(registration_handler.get_registration_handler())
         dispatcher.add_handler(profile_handler.get_profile_handler())
+
+        dispatcher.add_handler(CallbackQueryHandler(search_handler.search_callbacks, pattern=r'^Search'))
+        dispatcher.add_handler(MessageHandler(Filters.text([buttons.btn_future_games]), search_handler.search_games))
 
         updater.start_polling()
         updater.idle()

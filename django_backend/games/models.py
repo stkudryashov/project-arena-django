@@ -3,12 +3,14 @@ from django.db import models
 from arenas.models import Arena
 from telegrambot.models import TelegramUser
 
+from datetime import datetime
+
 
 class Game(models.Model):
     """Модель игры привязанной к определенному манежу"""
 
     datetime = models.DateTimeField(verbose_name='Дата')
-    max_players = models.PositiveIntegerField(verbose_name='Количество мест')
+    max_players = models.PositiveIntegerField(verbose_name='Количество мест', default=0)
     price = models.PositiveIntegerField(verbose_name='Стоимость участия')
 
     arena = models.ForeignKey(Arena, on_delete=models.PROTECT, related_name='games', verbose_name='Манеж')
@@ -35,6 +37,12 @@ class Game(models.Model):
         """Есть ли свободные места в игре"""
 
         return self.free_space > 0
+
+    # @property
+    # def is_end(self):
+    #     """Закончилась ли игра"""
+    #
+    #     return self.datetime < datetime.now()
 
     def __str__(self):
         return f'{self.datetime} - {self.arena}'

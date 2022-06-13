@@ -35,6 +35,9 @@ class KnowledgeAdmin(admin.ModelAdmin):
         ('Дополнительные кнопки', {
             'fields': ('btn_back_menu',)
         }),
+        ('Поиск игры', {
+            'fields': ('btn_search_about', 'btn_search_enter', 'btn_search_next', 'msg_games_empty')
+        }),
     )
 
     list_display = ('language',)
