@@ -18,6 +18,7 @@ import pytz
 
 from telegrambot.management.handlers import registration_handler
 from telegrambot.management.handlers import profile_handler
+from telegrambot.management.handlers import friends_handler
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -35,6 +36,9 @@ class Command(BaseCommand):
 
         dispatcher.add_handler(registration_handler.get_registration_handler())
         dispatcher.add_handler(profile_handler.get_profile_handler())
+
+        for _handler in friends_handler.get_friends_handlers():
+            dispatcher.add_handler(_handler)
 
         updater.start_polling()
         updater.idle()
