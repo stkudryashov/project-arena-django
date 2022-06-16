@@ -46,6 +46,27 @@ def search_games(update: Update, context: CallbackContext, last_id=None):
     update.effective_message.reply_text(message, reply_markup=markup)
 
 
+def search_join_game(update: Update, context: CallbackContext, game_id):
+    user = TelegramUser.objects.filter(telegram_id=update.effective_user.id).first()
+
+    # На всякий случай буду всегда проверять пользователя
+    if user is None:
+        return False
+
+    game = Game.objects.filter(id=game_id).first()
+    if game.players.all().filter(user=user).exists():
+        update.effective_message.reply_text("Вы уже записаны на эту игру")
+        return False
+
+    if not game.has_space:
+        update.effective_message.reply_text("К сожалению в игре не осталось мест!")
+        return False
+
+    game.players.create(user=user)
+    update.effective_message.reply_text("Записали вас на эту игру!")
+    return True
+
+
 def search_callbacks(update: Update, context: CallbackContext):
     """Обработчик inline клавиатуры под сообщениями"""
 
@@ -59,3 +80,10 @@ def search_callbacks(update: Update, context: CallbackContext):
         finally:
             last_id = button_press.data.split()[1]
             search_games(update, context, last_id)
+    elif 'SearchEnter' in button_press.data:
+        try:
+            button_press.message.delete()
+        except telegram.TelegramError:
+            pass
+        finally:
+            search_join_game(update, context, button_press.data.split()[1])

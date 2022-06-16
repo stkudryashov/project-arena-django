@@ -67,7 +67,7 @@ class TelegramUserGame(models.Model):
         ('refused', 'Отказался'),
     )
 
-    status = models.CharField(choices=PLAYER_STATUS, max_length=32, verbose_name='Статус')
+    status = models.CharField(choices=PLAYER_STATUS, max_length=32, verbose_name='Статус', default=PLAYER_STATUS[0][0])
 
     def __str__(self):
         return f'{self.user.telegram_username} - {self.game.arena} {self.game.datetime}'
