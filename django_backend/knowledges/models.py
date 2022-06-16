@@ -20,29 +20,35 @@ class Knowledge(models.Model):
 
     success_reg = models.TextField(verbose_name='Успешная регистрация')
 
-    play_skill_params = models.CharField(max_length=128, verbose_name='Уровни игры')
+    play_skill_params = models.CharField(max_length=64, verbose_name='Уровни игры')
 
-    time_unselect_emoji = models.CharField(max_length=128, verbose_name='Эмодзи (не выбрано)')
-    time_select_emoji = models.CharField(max_length=128, verbose_name='Эмодзи (выбрано)')
+    time_unselect_emoji = models.CharField(max_length=16, verbose_name='Эмодзи (не выбрано)')
+    time_select_emoji = models.CharField(max_length=16, verbose_name='Эмодзи (выбрано)')
 
-    menu_message_text = models.CharField(max_length=128, verbose_name='Сообщение "Главное меню"')
+    menu_message_text = models.CharField(max_length=64, verbose_name='Сообщение "Главное меню"')
 
-    btn_future_games = models.CharField(max_length=128, verbose_name='Кнопка "Предстоящие игры"')
-    btn_my_games = models.CharField(max_length=128, verbose_name='Кнопка "Мои игры"')
-    btn_friends = models.CharField(max_length=128, verbose_name='Кнопка "Друзья"')
-    btn_profile = models.CharField(max_length=128, verbose_name='Кнопка "Профиль"')
-    btn_notifications = models.CharField(max_length=128, verbose_name='Кнопка "Уведомления"')
+    btn_future_games = models.CharField(max_length=32, verbose_name='Кнопка "Предстоящие игры"')
+    btn_my_games = models.CharField(max_length=32, verbose_name='Кнопка "Мои игры"')
+    btn_friends = models.CharField(max_length=32, verbose_name='Кнопка "Друзья"')
+    btn_profile = models.CharField(max_length=32, verbose_name='Кнопка "Профиль"')
+    btn_notifications = models.CharField(max_length=32, verbose_name='Кнопка "Уведомления"')
 
-    edit_message_text = models.CharField(max_length=128, verbose_name='Сообщение "Редактирование профиля"')
+    edit_message_text = models.CharField(max_length=64, verbose_name='Сообщение "Редактирование профиля"')
 
-    btn_edit_phone = models.CharField(max_length=128, verbose_name='Кнопка "Изменить телефон"')
-    btn_edit_name = models.CharField(max_length=128, verbose_name='Кнопка "Изменить имя"')
-    btn_edit_date_of_birth = models.CharField(max_length=128, verbose_name='Кнопка "Изменить дату рождения"')
-    btn_edit_city = models.CharField(max_length=128, verbose_name='Кнопка "Изменить город"')
-    btn_edit_level = models.CharField(max_length=128, verbose_name='Кнопка "Изменить уровень игры"')
-    btn_edit_playtime = models.CharField(max_length=128, verbose_name='Кнопка "Изменить удобное время"')
+    btn_edit_phone = models.CharField(max_length=32, verbose_name='Кнопка "Изменить телефон"')
+    btn_edit_name = models.CharField(max_length=32, verbose_name='Кнопка "Изменить имя"')
+    btn_edit_date_of_birth = models.CharField(max_length=32, verbose_name='Кнопка "Изменить дату рождения"')
+    btn_edit_city = models.CharField(max_length=32, verbose_name='Кнопка "Изменить город"')
+    btn_edit_level = models.CharField(max_length=32, verbose_name='Кнопка "Изменить уровень игры"')
+    btn_edit_playtime = models.CharField(max_length=32, verbose_name='Кнопка "Изменить удобное время"')
 
-    btn_back_menu = models.CharField(max_length=128, verbose_name='Кнопка "Назад в меню"')
+    btn_back_menu = models.CharField(max_length=32, verbose_name='Кнопка "Назад в меню"')
+
+    btn_search_about = models.CharField(max_length=32, verbose_name='Кнопка "О манеже"')
+    btn_search_enter = models.CharField(max_length=32, verbose_name='Кнопка "Записаться"')
+    btn_search_next = models.CharField(max_length=32, verbose_name='Кнопка "Далее"')
+
+    msg_games_empty = models.CharField(max_length=64, verbose_name='Сообщение о конце поиска')
 
     def __str__(self):
         return f'{self.language}'
