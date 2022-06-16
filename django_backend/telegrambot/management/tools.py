@@ -88,7 +88,7 @@ def get_callback_as_dict(data) -> dict:
 
 
 def create_callback(callback_name, callback_value) -> str:
-    _dict = {'callback': callback_name, 'id': callback_value}
+    _dict = {'callback': callback_name, 'value': callback_value}
     return json.dumps(_dict)
 
 
@@ -163,10 +163,10 @@ def time_hour(user, update: Update, context: CallbackContext):
         return True
 
     if callback_data.get('callback') == 'day':
-        if context.user_data.get('day') == callback_data.get('id'):
+        if context.user_data.get('day') == callback_data.get('value'):
             context.user_data['day'] = None
         else:
-            context.user_data['day'] = callback_data.get('id')
+            context.user_data['day'] = callback_data.get('value')
 
     _days = DayOfTheWeek.objects.all()
 
@@ -189,7 +189,7 @@ def time_hour(user, update: Update, context: CallbackContext):
                 user_selected_this_hour = user in _hours[j].users.all()
 
                 if callback_data.get('callback') == 'hour':
-                    if callback_data.get('id') == _hours[j].id:
+                    if callback_data.get('value') == _hours[j].id:
                         if user_selected_this_hour:
                             _hours[j].users.remove(user)
                             user_selected_this_hour = False
@@ -209,7 +209,7 @@ def time_hour(user, update: Update, context: CallbackContext):
 
             days_keyboard.append(line)
 
-    days_keyboard.append([InlineKeyboardButton("CONTINUE", callback_data=create_callback('skip', 'skip'))])
+    days_keyboard.append([InlineKeyboardButton('CONTINUE', callback_data=create_callback('skip', 'skip'))])
 
     markup = InlineKeyboardMarkup(days_keyboard)
     message.edit_reply_markup(markup)
@@ -227,7 +227,7 @@ def level_markup() -> InlineKeyboardMarkup:
 
 def set_user_level(user, update: Update):
     callback_data = get_callback_as_dict(update.callback_query.data)
-    level_index = callback_data.get("id")
+    level_index = callback_data.get('value')
 
     _levels = Knowledge.objects.get(language='RU').play_skill_params.strip().split(',')
     level_value = _levels[level_index]

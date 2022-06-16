@@ -19,6 +19,7 @@ import pytz
 from telegrambot.management.handlers import registration_handler
 from telegrambot.management.handlers import profile_handler
 from telegrambot.management.handlers import search_handler
+from telegrambot.management.handlers import friends_handler
 
 from knowledges.models import Knowledge
 
@@ -41,6 +42,9 @@ class Command(BaseCommand):
 
         dispatcher.add_handler(CallbackQueryHandler(search_handler.search_callbacks, pattern=r'^Search'))
         dispatcher.add_handler(MessageHandler(Filters.text([buttons.btn_future_games]), search_handler.search_games))
+
+        for _handler in friends_handler.get_friends_handlers():
+            dispatcher.add_handler(_handler)
 
         updater.start_polling()
         updater.idle()
