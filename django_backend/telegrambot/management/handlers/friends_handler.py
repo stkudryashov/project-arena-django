@@ -47,7 +47,7 @@ def find_friend(update: Update, context: CallbackContext):
     found_user = TelegramUser.objects.filter(telegram_username=friend_telegram_username).first()
 
     if found_user is None:
-        update.effective_message.reply_text("Такой пользователь не пользуется нашем ботом!")
+        update.effective_message.reply_text("Такой пользователь не пользуется нашим ботом!")
         return ConversationHandler.END
 
     if user.friends.filter(friend=found_user).exists():
@@ -157,7 +157,6 @@ def end_friend_lookup(update: Update, context: CallbackContext):
 
 
 def get_friends_handlers():
-
     return MessageHandler(Filters.regex("^(👥 Друзья)$"), show_user_friend_list), \
            ConversationHandler(
                entry_points=[CommandHandler('add_friend', ask_friend_telegram_username),

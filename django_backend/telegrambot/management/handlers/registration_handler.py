@@ -47,7 +47,7 @@ def reg_phone(update: Update, context: CallbackContext):
     message = update.effective_message
 
     if is_phone_valid(message.text):
-        context.user_data["phone"] = message.text
+        context.user_data['phone'] = message.text
         return ask_name(update, context)
     else:
         message.reply_text(Knowledge.objects.get(language='RU').error_phone_number)
@@ -128,11 +128,11 @@ def reg_city(update: Update, context: CallbackContext):
 
     # Создание объекта пользователя Telegram
     TelegramUser.objects.create(
-        username=context.user_data["name"],
-        city_id=context.user_data["city"],
-        phone_number=context.user_data["phone"],
+        username=context.user_data['name'],
+        city_id=context.user_data['city'],
+        phone_number=context.user_data['phone'],
         telegram_id=update.effective_user.id,
-        date_of_birth=context.user_data["birthday"],
+        date_of_birth=context.user_data['birthday'],
         telegram_username=update.effective_user.username,
         # telegram_img=user_photos
     )
