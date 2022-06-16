@@ -103,7 +103,7 @@ def reg_city(update: Update, context: CallbackContext):
     """Записывает выбранный город"""
 
     callback_data = get_callback_as_dict(update.callback_query.data)
-    city_id = callback_data.get('id')
+    city_id = callback_data.get('value')
 
     message = update.callback_query.message
     _selected_city = City.objects.filter(id=city_id).first()

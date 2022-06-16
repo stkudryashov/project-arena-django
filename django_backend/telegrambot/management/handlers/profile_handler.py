@@ -120,7 +120,7 @@ def change_city(update: Update, context: CallbackContext):
     """Записывает выбранный город"""
 
     callback_data = get_callback_as_dict(update.callback_query.data)
-    city_id = callback_data.get('id')
+    city_id = callback_data.get('value')
 
     user = TelegramUser.objects.filter(telegram_id=update.effective_user.id).first()
     if user is None:
