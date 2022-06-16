@@ -88,7 +88,7 @@ def get_callback_as_dict(data) -> dict:
 
 
 def create_callback(callback_name, callback_value) -> str:
-    _dict = {'callback': callback_name, 'id': callback_value}
+    _dict = {'callback': callback_name, 'value': callback_value}
     return json.dumps(_dict)
 
 
