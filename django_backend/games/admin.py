@@ -5,6 +5,7 @@ from games.models import Game, TelegramUserGame
 
 class TelegramUserGameInLine(admin.TabularInline):
     model = TelegramUserGame
+    extra = 0
     verbose_name_plural = 'Игроки'
 
 

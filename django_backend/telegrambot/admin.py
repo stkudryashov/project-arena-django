@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from characteristics.models import UserCharacteristic
 from telegrambot.models import TelegramUser
 
 from import_export.admin import ExportMixin
@@ -20,8 +21,31 @@ class TelegramUserResource(resources.ModelResource):
         exclude = ('telegram_id', 'telegram_img', 'city', 'id')
 
 
+class TelegramUserCharacteristic(admin.TabularInline):
+    model = UserCharacteristic
+    extra = 0
+    verbose_name_plural = 'Характеристики'
+
+
 @admin.register(TelegramUser)
 class TelegramUserAdmin(ExportMixin, admin.ModelAdmin):
     resource_class = TelegramUserResource
+    inlines = [TelegramUserCharacteristic]
 
-    list_display = ('username', 'telegram_username', 'phone_number')
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('username', 'phone_number', 'date_of_birth', 'city')
+        }),
+        ('Telegram', {
+            'fields': ('telegram_username', 'telegram_id', 'telegram_img')
+        }),
+        ('Блокировка', {
+            'fields': ('is_banned',)
+        })
+    )
+
+    list_display = ('username', 'telegram_username', 'phone_number', 'city', 'date_of_birth', 'is_banned')
+    list_filter = ('city', 'is_banned')
+
+    readonly_fields = ('telegram_id',)
+    search_fields = ('username', 'telegram_username', 'phone_number')
