@@ -44,6 +44,11 @@ class Knowledge(models.Model):
     btn_edit_level = models.CharField(max_length=32, verbose_name='Кнопка "Изменить уровень игры"')
     btn_edit_playtime = models.CharField(max_length=32, verbose_name='Кнопка "Изменить удобное время"')
 
+    edit_characteristic_request = models.CharField(max_length=64, verbose_name='Запрос значения характеристики')
+    edit_characteristic_success = models.CharField(max_length=64, verbose_name='Характеристика изменена')
+
+    edit_please_select_buttons = models.CharField(max_length=64, verbose_name='Выберите пункт из меню')
+
     btn_back_menu = models.CharField(max_length=32, verbose_name='Кнопка "Назад в меню"')
 
     btn_search_about = models.CharField(max_length=32, verbose_name='Кнопка "О манеже"')

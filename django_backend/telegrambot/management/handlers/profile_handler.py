@@ -1,4 +1,4 @@
-from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, CallbackQueryHandler
 
 from telegram.ext import (
@@ -9,21 +9,19 @@ from telegram.ext import (
 )
 
 from telegrambot.management.tools import (
-    create_callback,
     get_callback_as_dict,
     prepare_inline_keyboard,
     is_phone_valid, is_birthday_valid,
-    get_menu_keyboard,
     transform_date, time_day, time_hour, ProfileStatus, level_markup, set_user_level, send_menu, get_profile_keyboard,
     is_name_valid,
 )
 
-from characteristics.models import Characteristic, UserCharacteristic
-from playtime.models import DayOfTheWeek, UserTime
 from knowledges.models import Knowledge
 from arenas.models import City
-
 from telegrambot.models import TelegramUser
+
+from characteristics.models import Characteristic, UserCharacteristic
+
 from telegrambot.management.handlers.registration_handler import start_registration
 
 
@@ -31,7 +29,23 @@ def start_change(update: Update, context: CallbackContext):
     markup = ReplyKeyboardMarkup(get_profile_keyboard(), one_time_keyboard=False, resize_keyboard=True)
     message = Knowledge.objects.get(language='RU').edit_message_text
 
+    user = TelegramUser.objects.filter(telegram_id=update.effective_user.id).first()
+
+    if user is None:
+        return start_registration(update, context)
+
     update.effective_message.reply_text(message, reply_markup=markup)
+
+    date_of_birth = user.date_of_birth
+
+    profile_info = f'Имя: {user.username}\n' \
+                   f'Телефон: {user.phone_number}\n' \
+                   f'Дата рождения: {date_of_birth.day}.{date_of_birth.month}.{date_of_birth.year}\n'
+
+    for characteristic in UserCharacteristic.objects.filter(user=user, characteristic__show_in_menu=True):
+        profile_info += f'{characteristic.characteristic.title}: {characteristic.value}\n'
+
+    update.effective_message.reply_text(profile_info, reply_markup=markup)
 
     return ProfileStatus.DISTRIBUTE
 
@@ -188,6 +202,42 @@ def ask_time_hour(update: Update, context: CallbackContext):
         return ProfileStatus.DISTRIBUTE
 
 
+def ask_value(update: Update, context: CallbackContext):
+    """Спрашивает новое значение характеристики"""
+
+    update.message.reply_text(Knowledge.objects.get(language='RU').edit_characteristic_request)
+    return ProfileStatus.REG_VALUE
+
+
+def change_value(update: Update, context: CallbackContext):
+    """Изменяет значение характеристики"""
+
+    user = TelegramUser.objects.filter(telegram_id=update.effective_user.id).first()
+
+    if user is None:
+        return start_registration(update, context)
+
+    message = update.effective_message
+
+    if len(message.text) <= 128:
+        characteristic = Characteristic.objects.filter(title=context.user_data.get('value_name')).first()
+
+        if not characteristic:
+            message.reply_text('Не найдено')
+            return ProfileStatus.DISTRIBUTE
+
+        u_characteristic, _ = UserCharacteristic.objects.get_or_create(user=user, characteristic=characteristic)
+
+        u_characteristic.value = message.text
+        u_characteristic.save()
+
+        message.reply_text(Knowledge.objects.get(language='RU').edit_characteristic_success)
+        return ProfileStatus.DISTRIBUTE
+    else:
+        update.message.reply_text('Слишком длинное значение для характеристики!')
+        return ProfileStatus.REG_VALUE
+
+
 def distribute(update: Update, context: CallbackContext):
     message = update.effective_message
     command = message.text
@@ -197,6 +247,13 @@ def distribute(update: Update, context: CallbackContext):
     names = [buttons.btn_edit_name, buttons.btn_edit_date_of_birth, buttons.btn_edit_city,
              buttons.btn_edit_phone, buttons.btn_edit_level, buttons.btn_edit_playtime,
              buttons.btn_back_menu]
+
+    characteristics = Characteristic.objects.filter(show_in_menu=True).exclude(title='Уровень игры')
+
+    if characteristics:
+        characteristics_list = list(characteristics.values_list('title', flat=True))
+    else:
+        characteristics_list = []
 
     if command == names[0]:
         return ask_name(update, context)
@@ -212,8 +269,11 @@ def distribute(update: Update, context: CallbackContext):
         return ask_time_day(update, context)
     elif command == names[6]:
         return end_change(update, context)
+    elif command in characteristics_list:
+        context.user_data['value_name'] = command
+        return ask_value(update, context)
 
-    message.reply_text('Выберите один из пунктов или вернитесь в меню')
+    message.reply_text(Knowledge.objects.get(language='RU').edit_please_select_buttons)
 
 
 def end_change(update: Update, context: CallbackContext):
@@ -238,7 +298,9 @@ def get_profile_handler():
             ProfileStatus.ASK_LEVEL: [CallbackQueryHandler(ask_level)],
             ProfileStatus.REG_LEVEL: [CallbackQueryHandler(change_level)],
             ProfileStatus.ASK_DAY: [CallbackQueryHandler(ask_time_day)],
-            ProfileStatus.ASK_HOUR: [CallbackQueryHandler(ask_time_hour)]
+            ProfileStatus.ASK_HOUR: [CallbackQueryHandler(ask_time_hour)],
+            ProfileStatus.ASK_VALUE: [MessageHandler(Filters.text & ~Filters.command, ask_value)],
+            ProfileStatus.REG_VALUE: [MessageHandler(Filters.text & ~Filters.command, change_value)]
         },
         fallbacks=[CommandHandler('menu', end_change), CommandHandler('cancel', end_change),
                    MessageHandler(Filters.regex(Knowledge.objects.get(language='RU').btn_back_menu), end_change)]

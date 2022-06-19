@@ -24,8 +24,10 @@ class ProfileStatus:
     REG_LEVEL = 9
     ASK_DAY = 10
     ASK_HOUR = 11
+    ASK_VALUE = 12
+    REG_VALUE = 13
 
-    DISTRIBUTE = 12
+    DISTRIBUTE = 14
 
 
 def prepare_inline_keyboard(data, btn_per_line: int, callback_name: str):
@@ -113,9 +115,24 @@ def get_profile_keyboard():
     keyboard = [
         [buttons.btn_edit_name, buttons.btn_edit_date_of_birth],
         [buttons.btn_edit_city, buttons.btn_edit_phone],
-        [buttons.btn_edit_level, buttons.btn_edit_playtime],
-        [buttons.btn_back_menu]
+        [buttons.btn_edit_level, buttons.btn_edit_playtime]
     ]
+
+    characteristics = Characteristic.objects.filter(show_in_menu=True).exclude(title='Уровень игры')
+
+    if characteristics:
+        line = []
+
+        for index, value in enumerate(list(characteristics.values_list('title', flat=True))):
+            line.append(value)
+
+            if (index + 1) % 2 == 0:
+                keyboard.append(line)
+                line = []
+
+        keyboard.append(line)
+
+    keyboard.append([buttons.btn_back_menu])
 
     return keyboard
 

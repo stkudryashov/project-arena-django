@@ -43,6 +43,9 @@ class Command(BaseCommand):
         dispatcher.add_handler(CallbackQueryHandler(search_handler.search_callbacks, pattern=r'^Search'))
         dispatcher.add_handler(MessageHandler(Filters.text([buttons.btn_future_games]), search_handler.search_games))
 
+        dispatcher.add_handler(MessageHandler(Filters.text([buttons.btn_back_menu]),
+                                              registration_handler.start_registration))
+
         for _handler in friends_handler.get_friends_handlers():
             dispatcher.add_handler(_handler)
 

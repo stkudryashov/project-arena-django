@@ -1,4 +1,4 @@
-from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, CallbackQueryHandler
 
 from telegram.ext import (
@@ -9,16 +9,12 @@ from telegram.ext import (
 )
 
 from telegrambot.management.tools import (
-    create_callback,
     get_callback_as_dict,
     prepare_inline_keyboard,
     is_phone_valid, is_birthday_valid,
-    get_menu_keyboard,
     transform_date, time_day, time_hour, ProfileStatus, set_user_level, level_markup, send_menu, is_name_valid,
 )
 
-from characteristics.models import Characteristic, UserCharacteristic
-from playtime.models import DayOfTheWeek, UserTime
 from knowledges.models import Knowledge
 from arenas.models import City
 

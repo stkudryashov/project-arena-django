@@ -6,7 +6,8 @@ from telegrambot.models import TelegramUser
 class Characteristic(models.Model):
     """Модель названий характеристик"""
 
-    title = models.CharField(max_length=128, verbose_name='Название')
+    title = models.CharField(max_length=128, verbose_name='Название', unique=True)
+    show_in_menu = models.BooleanField(default=False, verbose_name='Отображать в меню')
 
     def __str__(self):
         return f'{self.title}'

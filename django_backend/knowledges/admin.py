@@ -32,6 +32,9 @@ class KnowledgeAdmin(admin.ModelAdmin):
             'fields': ('edit_message_text', 'btn_edit_phone', 'btn_edit_name', 'btn_edit_date_of_birth',
                        'btn_edit_city', 'btn_edit_level', 'btn_edit_playtime')
         }),
+        ('Сообщения меню редактирования', {
+            'fields': ('edit_please_select_buttons', 'edit_characteristic_request', 'edit_characteristic_success')
+        }),
         ('Дополнительные кнопки', {
             'fields': ('btn_back_menu',)
         }),
