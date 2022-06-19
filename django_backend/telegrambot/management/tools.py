@@ -7,9 +7,8 @@ import re
 from telegram.ext import CallbackContext
 
 from characteristics.models import Characteristic, UserCharacteristic
-from knowledges.models import Knowledge
 from playtime.models import UserTime, DayOfTheWeek
-from telegrambot.models import TelegramUser
+from knowledges.models import Knowledge
 
 
 class ProfileStatus:
@@ -29,7 +28,7 @@ class ProfileStatus:
     DISTRIBUTE = 12
 
 
-def prepare_inline_keyboard(data, btns_per_line: int, callback_name: str):
+def prepare_inline_keyboard(data, btn_per_line: int, callback_name: str):
     """Динамически распределяет пространство для клавиатуры"""
 
     result = []
@@ -38,7 +37,7 @@ def prepare_inline_keyboard(data, btns_per_line: int, callback_name: str):
     for i in range(len(data)):
         line.append(InlineKeyboardButton(data[i].title, callback_data=create_callback(callback_name, data[i].id)))
 
-        if (i + 1) % btns_per_line == 0:
+        if (i + 1) % btn_per_line == 0:
             result.append(line)
             line = []
 
@@ -124,8 +123,10 @@ def get_profile_keyboard():
 def time_day(update: Update, context: CallbackContext):
     _days = DayOfTheWeek.objects.all()
 
-    days_keyboard = prepare_inline_keyboard(_days, 1, "day")
-    days_keyboard.append([InlineKeyboardButton("CONTINUE", callback_data=create_callback("skip", ""))])
+    text_button = Knowledge.objects.get(language='RU').btn_continue_time
+
+    days_keyboard = prepare_inline_keyboard(_days, 1, 'day')
+    days_keyboard.append([InlineKeyboardButton(text_button, callback_data=create_callback('skip', ''))])
 
     markup = InlineKeyboardMarkup(days_keyboard)
 
@@ -181,7 +182,7 @@ def time_hour(user, update: Update, context: CallbackContext):
             line = []
 
             # Количество кнопок в ряду (для часов)
-            btns_per_line = 5
+            btn_per_line = 5
 
             for j in range(len(_hours)):
                 _prefix = text_prefix.get('unselected')
@@ -203,13 +204,14 @@ def time_hour(user, update: Update, context: CallbackContext):
                 line.append(InlineKeyboardButton(_prefix + _hours[j].time.strftime('%H:%M'),
                                                  callback_data=create_callback('hour', _hours[j].id)))
 
-                if (j + 1) % btns_per_line == 0:
+                if (j + 1) % btn_per_line == 0:
                     days_keyboard.append(line)
                     line = []
 
             days_keyboard.append(line)
 
-    days_keyboard.append([InlineKeyboardButton('CONTINUE', callback_data=create_callback('skip', 'skip'))])
+    days_keyboard.append([InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_continue_time,
+                                               callback_data=create_callback('skip', 'skip'))])
 
     markup = InlineKeyboardMarkup(days_keyboard)
     message.edit_reply_markup(markup)

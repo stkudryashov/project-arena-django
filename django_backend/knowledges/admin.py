@@ -21,8 +21,8 @@ class KnowledgeAdmin(admin.ModelAdmin):
         ('Уровни игры (через запятую)', {
             'fields': ('play_skill_params',)
         }),
-        ('Эмодзи выбора времени', {
-            'fields': ('time_unselect_emoji', 'time_select_emoji')
+        ('Выбор времени', {
+            'fields': ('time_unselect_emoji', 'time_select_emoji', 'btn_continue_time')
         }),
         ('Кнопки главного меню', {
             'fields': ('menu_message_text', 'btn_future_games', 'btn_my_games', 'btn_friends',
@@ -38,7 +38,15 @@ class KnowledgeAdmin(admin.ModelAdmin):
         ('Поиск игры', {
             'fields': ('btn_search_about', 'btn_search_enter', 'btn_search_next', 'msg_games_empty')
         }),
+        ('Поиск друзей', {
+            'fields': ('friends_text', 'friends_enter_text', 'friends_404_text', 'friends_invite_msg',
+                       'friends_already_text', 'friends_is_you_text', 'friends_send_text', 'friends_request_text',
+                       'friends_request_fall', 'friends_request_decline', 'friends_btn_add_new', 'friends_btn_add',
+                       'friends_btn_decline')
+        }),
     )
+
+    readonly_fields = ('play_skill_params',)
 
     list_display = ('language',)
     list_display_links = ('language',)

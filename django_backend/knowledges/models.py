@@ -25,6 +25,8 @@ class Knowledge(models.Model):
     time_unselect_emoji = models.CharField(max_length=16, verbose_name='Эмодзи (не выбрано)')
     time_select_emoji = models.CharField(max_length=16, verbose_name='Эмодзи (выбрано)')
 
+    btn_continue_time = models.CharField(max_length=32, verbose_name='Кнопка "Подтвердить время"')
+
     menu_message_text = models.CharField(max_length=64, verbose_name='Сообщение "Главное меню"')
 
     btn_future_games = models.CharField(max_length=32, verbose_name='Кнопка "Предстоящие игры"')
@@ -49,6 +51,25 @@ class Knowledge(models.Model):
     btn_search_next = models.CharField(max_length=32, verbose_name='Кнопка "Далее"')
 
     msg_games_empty = models.CharField(max_length=64, verbose_name='Сообщение о конце поиска')
+
+    friends_text = models.CharField(max_length=64, verbose_name='Старт добавления друга')
+    friends_enter_text = models.CharField(max_length=64, verbose_name='Запрос имени друга')
+
+    friends_404_text = models.TextField(verbose_name='Друг не найден')
+    friends_invite_msg = models.TextField(verbose_name='Сообщение для приглашения')
+
+    friends_already_text = models.CharField(max_length=64, verbose_name='Ошибка "Друг уже добавлен"')
+    friends_is_you_text = models.CharField(max_length=64, verbose_name='Ошибка "Себя добавить нельзя"')
+
+    friends_send_text = models.CharField(max_length=64, verbose_name='Уведомление для друга')
+    friends_request_text = models.CharField(max_length=64, verbose_name='Запрос дружбы отправлен')
+
+    friends_request_fall = models.CharField(max_length=64, verbose_name='Запрос дружбы отклонен')
+    friends_request_decline = models.CharField(max_length=64, verbose_name='Вы отклонили дружбу')
+
+    friends_btn_add_new = models.CharField(max_length=32, verbose_name='Кнопка "Добавить нового друга"')
+    friends_btn_add = models.CharField(max_length=32, verbose_name='Кнопка "Принять приглашение"')
+    friends_btn_decline = models.CharField(max_length=32, verbose_name='Кнопка "Отклонить приглашение"')
 
     def __str__(self):
         return f'{self.language}'
