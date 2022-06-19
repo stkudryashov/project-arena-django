@@ -18,6 +18,8 @@ class City(models.Model):
 class Arena(models.Model):
     """Модель манежей"""
 
+    title = models.CharField(max_length=32, verbose_name='Название манежа')
+
     address = models.CharField(max_length=128, verbose_name='Адрес')
     city = models.ForeignKey(City, on_delete=models.PROTECT, verbose_name='Город')
 

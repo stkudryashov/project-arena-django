@@ -50,6 +50,10 @@ class Knowledge(models.Model):
     btn_search_enter = models.CharField(max_length=32, verbose_name='Кнопка "Записаться"')
     btn_search_next = models.CharField(max_length=32, verbose_name='Кнопка "Далее"')
 
+    search_enter = models.CharField(max_length=64, verbose_name='Вы записались на игру')
+    search_already_enter = models.CharField(max_length=64, verbose_name='Уже записан на игру')
+    search_not_free_space = models.CharField(max_length=64, verbose_name='В игре нет мест')
+
     msg_games_empty = models.CharField(max_length=64, verbose_name='Сообщение о конце поиска')
 
     friends_text = models.CharField(max_length=64, verbose_name='Старт добавления друга')
