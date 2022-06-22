@@ -9,6 +9,7 @@ from telegram.ext import CallbackContext
 from characteristics.models import Characteristic, UserCharacteristic
 from playtime.models import UserTime, DayOfTheWeek
 from knowledges.models import Knowledge
+from telegrambot.models import TelegramUser
 
 
 class ProfileStatus:
@@ -233,6 +234,34 @@ def time_hour(user, update: Update, context: CallbackContext):
     markup = InlineKeyboardMarkup(days_keyboard)
     message.edit_reply_markup(markup)
     return False
+
+
+def get_user_or_notify(func):
+    # Ищет пользователя в БД, если не находит, отправляет текст, возвращает User или None
+
+    def wrapper(*args, **kwargs):
+        update: Update = kwargs.get("update")
+
+        if update is None:
+            update = args[0]
+            if update is None:
+                return
+
+        telegram_id = update.effective_user.id
+        user = TelegramUser.objects.filter(telegram_id=telegram_id).first()
+
+        if user is None:
+            update.effective_message.reply_text("У вас нет прав на использование этой команды")
+            return
+
+        return func(*args, **kwargs, user=user)
+
+    return wrapper
+
+
+def get_user_or_none(telegram_id):
+    user = TelegramUser.objects.filter(telegram_id=telegram_id).first()
+    return user
 
 
 def level_markup() -> InlineKeyboardMarkup:
