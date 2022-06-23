@@ -1,3 +1,5 @@
+from django.utils import dateformat
+
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext, CallbackQueryHandler, MessageHandler, Filters
 
@@ -19,12 +21,15 @@ def get_user_games(update: Update, context: CallbackContext, user: TelegramUser 
             status=TelegramUserGame.PLAYER_STATUS[2][0]).first()
 
     if current_game is None:
-        update.effective_message.reply_text("Вы не записаны на игры")
+        update.effective_message.reply_text(Knowledge.objects.get(language='RU').my_games_no_games)
         return
 
     game = current_game.game
 
-    message = f'Дата игры: {game.datetime}\n' \
+    date = dateformat.format(game.datetime, 'd E')
+    time = dateformat.time_format(game.datetime, 'H:i')
+
+    message = f'Дата игры: {date} {time}\n' \
               f'Максимально игроков: {game.max_players}\n' \
               f'Свободно мест: {game.free_space}\n' \
               f'Цена участия: {game.price}\n' \
@@ -32,8 +37,10 @@ def get_user_games(update: Update, context: CallbackContext, user: TelegramUser 
 
     buttons = [
         [
-            InlineKeyboardButton('О манеже', callback_data=f'MyGames about {current_game.id}'),
-            InlineKeyboardButton('Отменить запись', callback_data=f'MyGames leave {current_game.id}'),
+            InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_about,
+                                 callback_data=f'MyGames about {current_game.id}'),
+            InlineKeyboardButton(Knowledge.objects.get(language='RU').my_games_cancel_btn,
+                                 callback_data=f'MyGames leave {current_game.id}'),
         ]
     ]
 
@@ -64,7 +71,7 @@ def get_about(update: Update, context: CallbackContext, user: TelegramUser, last
 
 
 def user_leave_game(update: Update, context: CallbackContext, user: TelegramUser, last_id=None):
-    game:TelegramUserGame = TelegramUserGame.objects.filter(user=user, id=last_id).first()
+    game: TelegramUserGame = TelegramUserGame.objects.filter(user=user, id=last_id).first()
 
     if game is None:
         update.effective_message.reply_text("Произошла ошибка. Игра не была найдена, а это странно..")
@@ -72,7 +79,7 @@ def user_leave_game(update: Update, context: CallbackContext, user: TelegramUser
 
     game.delete()
 
-    update.effective_message.reply_text("Запись отменена!")
+    update.effective_message.reply_text(Knowledge.objects.get(language='RU').my_games_cancel_text)
 
 
 @get_user_or_notify

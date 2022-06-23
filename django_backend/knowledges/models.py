@@ -81,6 +81,10 @@ class Knowledge(models.Model):
     friends_btn_add = models.CharField(max_length=32, verbose_name='Кнопка "Принять приглашение"')
     friends_btn_decline = models.CharField(max_length=32, verbose_name='Кнопка "Отклонить приглашение"')
 
+    my_games_no_games = models.CharField(max_length=32, verbose_name='Вы не записаны на игры')
+    my_games_cancel_btn = models.CharField(max_length=32, verbose_name='Кнопка "Отменить запись"')
+    my_games_cancel_text = models.CharField(max_length=64, verbose_name='Текст отмены записи')
+
     def __str__(self):
         return f'{self.language}'
 
