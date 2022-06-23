@@ -39,7 +39,7 @@ class KnowledgeAdmin(admin.ModelAdmin):
             'fields': ('btn_back_menu',)
         }),
         ('Поиск игры', {
-            'fields': ('btn_search_about', 'btn_search_enter', 'btn_search_next', 'search_enter',
+            'fields': ('btn_search_about', 'btn_search_enter', 'btn_search_back', 'btn_search_next', 'search_enter',
                        'search_already_enter', 'search_not_free_space', 'msg_games_empty')
         }),
         ('Поиск друзей', {

@@ -12,7 +12,7 @@ from django.utils import dateformat
 import telegram
 
 
-def search_games(update: Update, context: CallbackContext, last_id=None):
+def search_games(update: Update, context: CallbackContext, last_id=None, is_back=False):
     """Поиск игры и вывод информации о ней"""
 
     user = TelegramUser.objects.get(telegram_id=update.effective_user.id)
@@ -24,7 +24,10 @@ def search_games(update: Update, context: CallbackContext, last_id=None):
     )
 
     if last_id:
-        search_query &= Q(pk__gt=last_id)
+        if is_back:
+            search_query &= Q(pk__lt=last_id)
+        else:
+            search_query &= Q(pk__gt=last_id)
 
     current_game = Game.objects.filter(search_query).exclude(players__user=user).order_by('id').first()
 
@@ -46,7 +49,9 @@ def search_games(update: Update, context: CallbackContext, last_id=None):
                                callback_data=f'SearchAbout {current_game.id} {last_id}'),
           InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_enter,
                                callback_data=f'SearchEnter {current_game.id}')],
-         [InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_next,
+         [InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_back,
+                               callback_data=f'SearchBack {current_game.id}'),
+          InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_next,
                                callback_data=f'SearchNext {current_game.id}')]]
     )
 
@@ -116,6 +121,18 @@ def search_callbacks(update: Update, context: CallbackContext):
                 last_id = None
 
             search_games(update, context, last_id)
+    elif 'SearchBack' in button_press.data:
+        try:
+            button_press.message.delete()
+        except telegram.TelegramError:
+            pass
+        finally:
+            last_id = button_press.data.split()[1]
+
+            if last_id == 'None':
+                last_id = None
+
+            search_games(update, context, last_id, is_back=True)
     elif 'SearchEnter' in button_press.data:
         try:
             button_press.message.delete()

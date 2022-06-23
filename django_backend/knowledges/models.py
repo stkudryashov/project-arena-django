@@ -53,6 +53,7 @@ class Knowledge(models.Model):
 
     btn_search_about = models.CharField(max_length=32, verbose_name='Кнопка "О манеже"')
     btn_search_enter = models.CharField(max_length=32, verbose_name='Кнопка "Записаться"')
+    btn_search_back = models.CharField(max_length=32, verbose_name='Кнопка "Назад"')
     btn_search_next = models.CharField(max_length=32, verbose_name='Кнопка "Далее"')
 
     search_enter = models.CharField(max_length=64, verbose_name='Вы записались на игру')
