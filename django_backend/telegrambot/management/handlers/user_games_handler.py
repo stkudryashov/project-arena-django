@@ -32,7 +32,7 @@ def get_user_games(update: Update, context: CallbackContext, user: TelegramUser 
 
     buttons = [
         [
-            InlineKeyboardButton('О манеже', callback_data=f'SearchAbout {game.arena.id}'),
+            InlineKeyboardButton('О манеже', callback_data=f'MyGames about {current_game.id}'),
             InlineKeyboardButton('Отменить запись', callback_data=f'MyGames leave {current_game.id}'),
         ]
     ]
@@ -43,15 +43,34 @@ def get_user_games(update: Update, context: CallbackContext, user: TelegramUser 
     update.effective_message.reply_text(message, reply_markup=InlineKeyboardMarkup(buttons))
 
 
+def get_about(update: Update, context: CallbackContext, user: TelegramUser, last_id):
+    """Информация о манеже"""
+
+    current_game = TelegramUserGame.objects.filter(id=last_id).first().game
+
+    message = f'Название: {current_game.arena.title}\n' \
+              f'Описание: {current_game.arena.description}\n' \
+              f'Телефон: {current_game.arena.phone_number}\n' \
+              f'Адрес: {current_game.arena.address}\n'
+
+    markup = InlineKeyboardMarkup.from_column(
+        [InlineKeyboardButton('🔙 Назад', callback_data=f'MyGames next {last_id}')]
+    )
+
+    if current_game.arena.photo:
+        update.effective_message.reply_photo(current_game.arena.photo, message, reply_markup=markup)
+    else:
+        update.effective_message.reply_text(message, reply_markup=markup)
+
+
 def user_leave_game(update: Update, context: CallbackContext, user: TelegramUser, last_id=None):
-    game = TelegramUserGame.objects.filter(user=user, id=last_id).first()
+    game:TelegramUserGame = TelegramUserGame.objects.filter(user=user, id=last_id).first()
 
     if game is None:
         update.effective_message.reply_text("Произошла ошибка. Игра не была найдена, а это странно..")
         return
 
-    game.status = game.PLAYER_STATUS[2][0]
-    game.save()
+    game.delete()
 
     update.effective_message.reply_text("Запись отменена!")
 
@@ -79,6 +98,10 @@ def _user_game_handler(update: Update, context: CallbackContext, user: TelegramU
     elif command == "next":
         last_id = button_data[2]
         get_user_games(update, context, user, last_id)
+
+    elif command == "about":
+        last_id = button_data[2]
+        get_about(update, context, user, last_id)
 
     button_press.message.delete()
 
