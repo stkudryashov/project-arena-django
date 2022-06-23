@@ -53,6 +53,7 @@ class Knowledge(models.Model):
 
     btn_search_about = models.CharField(max_length=32, verbose_name='Кнопка "О манеже"')
     btn_search_enter = models.CharField(max_length=32, verbose_name='Кнопка "Записаться"')
+    btn_search_back = models.CharField(max_length=32, verbose_name='Кнопка "Назад"')
     btn_search_next = models.CharField(max_length=32, verbose_name='Кнопка "Далее"')
 
     search_enter = models.CharField(max_length=64, verbose_name='Вы записались на игру')
@@ -79,6 +80,10 @@ class Knowledge(models.Model):
     friends_btn_add_new = models.CharField(max_length=32, verbose_name='Кнопка "Добавить нового друга"')
     friends_btn_add = models.CharField(max_length=32, verbose_name='Кнопка "Принять приглашение"')
     friends_btn_decline = models.CharField(max_length=32, verbose_name='Кнопка "Отклонить приглашение"')
+
+    my_games_no_games = models.CharField(max_length=32, verbose_name='Вы не записаны на игры')
+    my_games_cancel_btn = models.CharField(max_length=32, verbose_name='Кнопка "Отменить запись"')
+    my_games_cancel_text = models.CharField(max_length=64, verbose_name='Текст отмены записи')
 
     def __str__(self):
         return f'{self.language}'

@@ -20,6 +20,7 @@ from telegrambot.management.handlers import registration_handler
 from telegrambot.management.handlers import profile_handler
 from telegrambot.management.handlers import search_handler
 from telegrambot.management.handlers import friends_handler
+from telegrambot.management.handlers import user_games_handler
 
 from knowledges.models import Knowledge
 
@@ -47,6 +48,9 @@ class Command(BaseCommand):
                                               registration_handler.start_registration))
 
         for _handler in friends_handler.get_friends_handlers():
+            dispatcher.add_handler(_handler)
+
+        for _handler in user_games_handler.get_user_games_handlers():
             dispatcher.add_handler(_handler)
 
         updater.start_polling()
