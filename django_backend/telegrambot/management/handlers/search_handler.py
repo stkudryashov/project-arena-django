@@ -95,7 +95,8 @@ def search_about(update: Update, context: CallbackContext, game_id, last_id):
               f'Адрес: {current_game.arena.address}\n'
 
     markup = InlineKeyboardMarkup.from_column(
-        [InlineKeyboardButton('🔙 Назад', callback_data=f'SearchNext {last_id}')]
+        [InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_back,
+                              callback_data=f'SearchNext {last_id}')]
     )
 
     if current_game.arena.photo:

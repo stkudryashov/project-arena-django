@@ -45,7 +45,8 @@ def get_user_games(update: Update, context: CallbackContext, user: TelegramUser 
     ]
 
     if user.games.exclude(status=TelegramUserGame.PLAYER_STATUS[2][0]).count() > 1:
-        buttons.append([InlineKeyboardButton('Далее', callback_data=f'MyGames next {current_game.id}')])
+        buttons.append([InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_next,
+                                             callback_data=f'MyGames next {current_game.id}')])
 
     if game.arena.photo:
         update.effective_message.reply_photo(game.arena.photo, message,
@@ -65,7 +66,8 @@ def get_about(update: Update, context: CallbackContext, user: TelegramUser, last
               f'Адрес: {current_game.arena.address}\n'
 
     markup = InlineKeyboardMarkup.from_column(
-        [InlineKeyboardButton('🔙 Назад', callback_data=f'MyGames next {last_id}')]
+        [InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_back,
+                              callback_data=f'MyGames next {last_id}')]
     )
 
     if current_game.arena.photo:
