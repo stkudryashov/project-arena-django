@@ -1,16 +1,17 @@
+from datetime import timedelta
 from django.db import models
+
+from django_celery_beat.models import ClockedSchedule, PeriodicTask
 
 from arenas.models import Arena
 from telegrambot.models import TelegramUser
 
-from datetime import datetime
+import json
 
 
 class Game(models.Model):
-    """Модель игры привязанной к определенному манежу"""
-
     datetime = models.DateTimeField(verbose_name='Дата')
-    max_players = models.PositiveIntegerField(verbose_name='Количество мест', default=0)
+    max_players = models.PositiveIntegerField(verbose_name='Количество мест')
     price = models.PositiveIntegerField(verbose_name='Стоимость участия')
 
     arena = models.ForeignKey(Arena, on_delete=models.PROTECT, related_name='games', verbose_name='Манеж')
@@ -23,26 +24,23 @@ class Game(models.Model):
 
     status = models.CharField(choices=GAME_STATUS, max_length=32, verbose_name='Статус')
 
-    @property
-    def free_space(self):
-        """Число свободных мест в игре"""
+    def save(self, *args, **kwargs):
+        super(Game, self).save(*args, **kwargs)
 
-        space = self.max_players - self.players.all().count()
-        return space if space > 0 else 0
+        if ClockedSchedule.objects.filter(periodictask__name=f'Telegram Notification {self.id}').exists():
+            ClockedSchedule.objects.filter(periodictask__name=f'Telegram Notification {self.id}').delete()
 
-    free_space.fget.short_description = 'Свободно мест'
+        clocked_schedule = ClockedSchedule.objects.create(
+            clocked_time=self.datetime - timedelta(minutes=15) - timedelta(hours=3)  # Костыль для scheduler
+        )  # Из даты вычитаем нужные 15 минут до игры и еще минус три часа для синхронизации UTC
 
-    @property
-    def has_space(self):
-        """Есть ли свободные места в игре"""
-
-        return self.free_space > 0
-
-    # @property
-    # def is_end(self):
-    #     """Закончилась ли игра"""
-    #
-    #     return self.datetime < datetime.now()
+        PeriodicTask.objects.create(
+            name=f'Telegram Notification {self.id}',
+            task='games_notification_task',
+            clocked=clocked_schedule,
+            args=json.dumps([self.id]),
+            one_off=True
+        )
 
     def __str__(self):
         return f'{self.datetime} - {self.arena}'
@@ -53,8 +51,6 @@ class Game(models.Model):
 
 
 class TelegramUserGame(models.Model):
-    """Промежуточная модель между пользователем и игрой"""
-
     user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, blank=True,
                              related_name='games', verbose_name='Пользователь')
 
@@ -67,7 +63,7 @@ class TelegramUserGame(models.Model):
         ('refused', 'Отказался'),
     )
 
-    status = models.CharField(choices=PLAYER_STATUS, max_length=32, verbose_name='Статус', default=PLAYER_STATUS[0][0])
+    status = models.CharField(choices=PLAYER_STATUS, max_length=32, verbose_name='Статус')
 
     def __str__(self):
         return f'{self.user.telegram_username} - {self.game.arena} {self.game.datetime}'
