@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'characteristics.apps.CharacteristicsConfig',
     'knowledges.apps.KnowledgesConfig',
     'telegrambot.apps.TelegrambotConfig',
+    'notifications.apps.NotificationsConfig',
 ]
 
 MIDDLEWARE = [

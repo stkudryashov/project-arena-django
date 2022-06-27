@@ -47,7 +47,11 @@ def get_user_games(update: Update, context: CallbackContext, user: TelegramUser 
     if user.games.exclude(status=TelegramUserGame.PLAYER_STATUS[2][0]).count() > 1:
         buttons.append([InlineKeyboardButton('Далее', callback_data=f'MyGames next {current_game.id}')])
 
-    update.effective_message.reply_text(message, reply_markup=InlineKeyboardMarkup(buttons))
+    if game.arena.photo:
+        update.effective_message.reply_photo(game.arena.photo, message,
+                                             reply_markup=InlineKeyboardMarkup(buttons))
+    else:
+        update.effective_message.reply_text(message, reply_markup=InlineKeyboardMarkup(buttons))
 
 
 def get_about(update: Update, context: CallbackContext, user: TelegramUser, last_id):

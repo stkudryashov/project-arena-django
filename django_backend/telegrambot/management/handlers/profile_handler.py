@@ -42,8 +42,12 @@ def start_change(update: Update, context: CallbackContext):
                    f'Телефон: {user.phone_number}\n' \
                    f'Дата рождения: {date_of_birth.day}.{date_of_birth.month}.{date_of_birth.year}\n'
 
-    for characteristic in UserCharacteristic.objects.filter(user=user, characteristic__show_in_menu=True):
-        profile_info += f'{characteristic.characteristic.title}: {characteristic.value}\n'
+    for characteristic in Characteristic.objects.filter(show_in_menu=True):
+        if UserCharacteristic.objects.filter(user=user, characteristic=characteristic).exists():
+            value = UserCharacteristic.objects.filter(user=user, characteristic=characteristic).first().value
+            profile_info += f'{characteristic.title}: {value}\n'
+        else:
+            profile_info += f'{characteristic.title}: -\n'
 
     update.effective_message.reply_text(profile_info, reply_markup=markup)
 
