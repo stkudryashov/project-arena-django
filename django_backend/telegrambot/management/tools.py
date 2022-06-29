@@ -94,15 +94,22 @@ def create_callback(callback_name, callback_value) -> str:
     return json.dumps(_dict)
 
 
-def get_menu_keyboard():
+def get_menu_keyboard(telegram_id):
     """Возвращает список с кнопками главного меню"""
 
     buttons = Knowledge.objects.get(language='RU')
 
+    user = TelegramUser.objects.filter(telegram_id=telegram_id).first()
+
+    if user.notifications:
+        notifications = buttons.btn_notifications_on
+    else:
+        notifications = buttons.btn_notifications_off
+
     keyboard = [
         [buttons.btn_future_games],
         [buttons.btn_my_games, buttons.btn_friends],
-        [buttons.btn_profile, buttons.btn_notifications]
+        [buttons.btn_profile, notifications]
     ]
 
     return keyboard
@@ -284,7 +291,7 @@ def set_user_level(user, update: Update):
 
     if UserCharacteristic.objects.filter(user=user, characteristic=characteristic_obj).exists():
         u_characteristic = UserCharacteristic.objects.get(user=user, characteristic=characteristic_obj)
-        u_characteristic.value = level_value
+        u_characteristic.value = level_value.strip()
         u_characteristic.save()
     else:
         UserCharacteristic.objects.create(
@@ -298,5 +305,27 @@ def set_user_level(user, update: Update):
 
 
 def send_menu(update: Update):
-    markup = ReplyKeyboardMarkup(get_menu_keyboard(), one_time_keyboard=False, resize_keyboard=True)
+    markup = ReplyKeyboardMarkup(get_menu_keyboard(update.effective_user.id), one_time_keyboard=False, resize_keyboard=True)
     update.effective_message.reply_text(Knowledge.objects.get(language='RU').menu_message_text, reply_markup=markup)
+
+
+def notification_change(update: Update, context: CallbackContext):
+    telegram_id = update.effective_user.id
+    user = TelegramUser.objects.filter(telegram_id=telegram_id).first()
+
+    if user.notifications:
+        user.notifications = False
+        user.save()
+
+        markup = ReplyKeyboardMarkup(get_menu_keyboard(update.effective_user.id), one_time_keyboard=False,
+                                     resize_keyboard=True)
+
+        update.effective_user.send_message('Уведомления выключены', reply_markup=markup)
+    else:
+        user.notifications = True
+        user.save()
+
+        markup = ReplyKeyboardMarkup(get_menu_keyboard(update.effective_user.id), one_time_keyboard=False,
+                                     resize_keyboard=True)
+
+        update.effective_user.send_message('Уведомления включены', reply_markup=markup)

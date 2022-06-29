@@ -16,6 +16,7 @@ class TelegramUser(models.Model):
     city = models.ForeignKey(City, on_delete=models.PROTECT, verbose_name='Город')
 
     telegram_id = models.CharField(max_length=16, verbose_name='Telegram ID')
+    notifications = models.BooleanField(default=True, verbose_name='Уведомления')
 
     is_banned = models.BooleanField(default=False, verbose_name='Статус блокировки')
 

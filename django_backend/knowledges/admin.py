@@ -26,7 +26,7 @@ class KnowledgeAdmin(admin.ModelAdmin):
         }),
         ('Кнопки главного меню', {
             'fields': ('menu_message_text', 'btn_future_games', 'btn_my_games', 'btn_friends',
-                       'btn_profile', 'btn_notifications')
+                       'btn_profile', 'btn_notifications_on', 'btn_notifications_off')
         }),
         ('Кнопки меню редактирования', {
             'fields': ('edit_message_text', 'btn_edit_phone', 'btn_edit_name', 'btn_edit_date_of_birth',
@@ -50,6 +50,9 @@ class KnowledgeAdmin(admin.ModelAdmin):
                        'friends_already_text', 'friends_is_you_text', 'friends_send_text', 'friends_request_text',
                        'friends_request_fall', 'friends_request_decline', 'friends_btn_add_new', 'friends_btn_add',
                        'friends_btn_decline')
+        }),
+        ('Уведомления', {
+            'fields': ('notifications_start', 'notifications_end', 'notifications_delay')
         }),
     )
 

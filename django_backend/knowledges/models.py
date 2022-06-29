@@ -4,7 +4,7 @@ from django.db import models
 class Knowledge(models.Model):
     """Модель справочника с текстовками для Telegram бота"""
 
-    language = models.CharField(max_length=16, default='RU', verbose_name='Язык справочника')
+    language = models.CharField(max_length=16, default='RU', verbose_name='Язык справочника', unique=True)
 
     reg_phone_number = models.CharField(max_length=128, verbose_name='Запрос номера телефона')
     reg_username = models.CharField(max_length=128, verbose_name='Запрос имени и фамилии')
@@ -33,7 +33,9 @@ class Knowledge(models.Model):
     btn_my_games = models.CharField(max_length=32, verbose_name='Кнопка "Мои игры"')
     btn_friends = models.CharField(max_length=32, verbose_name='Кнопка "Друзья"')
     btn_profile = models.CharField(max_length=32, verbose_name='Кнопка "Профиль"')
-    btn_notifications = models.CharField(max_length=32, verbose_name='Кнопка "Уведомления"')
+
+    btn_notifications_on = models.CharField(max_length=32, verbose_name='Кнопка "Уведомления (вкл.)"')
+    btn_notifications_off = models.CharField(max_length=32, verbose_name='Кнопка "Уведомления (отк.)"')
 
     edit_message_text = models.CharField(max_length=64, verbose_name='Сообщение "Редактирование профиля"')
 
@@ -84,6 +86,10 @@ class Knowledge(models.Model):
     my_games_no_games = models.CharField(max_length=32, verbose_name='Вы не записаны на игры')
     my_games_cancel_btn = models.CharField(max_length=32, verbose_name='Кнопка "Отменить запись"')
     my_games_cancel_text = models.CharField(max_length=64, verbose_name='Текст отмены записи')
+
+    notifications_start = models.TimeField(verbose_name='Старт уведомлений')
+    notifications_end = models.TimeField(verbose_name='Конец уведомлений')
+    notifications_delay = models.TimeField(verbose_name='Задержка до начала игры')
 
     def __str__(self):
         return f'{self.language}'

@@ -21,6 +21,7 @@ from telegrambot.management.handlers import profile_handler
 from telegrambot.management.handlers import search_handler
 from telegrambot.management.handlers import friends_handler
 from telegrambot.management.handlers import user_games_handler
+from telegrambot.management.tools import notification_change
 
 from knowledges.models import Knowledge
 
@@ -43,6 +44,9 @@ class Command(BaseCommand):
 
         dispatcher.add_handler(CallbackQueryHandler(search_handler.search_callbacks, pattern=r'^Search'))
         dispatcher.add_handler(MessageHandler(Filters.text([buttons.btn_future_games]), search_handler.search_games))
+
+        dispatcher.add_handler(MessageHandler(Filters.text([buttons.btn_notifications_on,
+                                                            buttons.btn_notifications_off]), notification_change))
 
         dispatcher.add_handler(MessageHandler(Filters.text([buttons.btn_back_menu]),
                                               registration_handler.start_registration))

@@ -5,6 +5,14 @@ from django_celery_beat.models import ClockedSchedule, PeriodicTask
 
 from arenas.models import Arena
 from telegrambot.models import TelegramUser
+from notifications.models import RuleCharacteristic
+from characteristics.models import UserCharacteristic
+from knowledges.models import Knowledge
+
+from django.db.models.functions import Cast
+from django.db.models import IntegerField
+
+from datetime import datetime
 
 import json
 
@@ -29,20 +37,82 @@ class Game(models.Model):
     def save(self, *args, **kwargs):
         super(Game, self).save(*args, **kwargs)
 
-        if ClockedSchedule.objects.filter(periodictask__name=f'Telegram Notification {self.id}').exists():
-            ClockedSchedule.objects.filter(periodictask__name=f'Telegram Notification {self.id}').delete()
+        # Удаление старых уведомлений по этой игре
+        if ClockedSchedule.objects.filter(periodictask__name__contains=f'Telegram Notification {self.id}').exists():
+            ClockedSchedule.objects.filter(periodictask__name__contains=f'Telegram Notification {self.id}').delete()
 
-        clocked_schedule = ClockedSchedule.objects.create(
-            clocked_time=self.datetime - timedelta(minutes=15) - timedelta(hours=3)  # Костыль для scheduler
-        )  # Из даты вычитаем нужные 15 минут до игры и еще минус три часа для синхронизации UTC
+        if self.status == 'pending':
+            # Подбор пользователей для уведомления по характеристикам
 
-        PeriodicTask.objects.create(
-            name=f'Telegram Notification {self.id}',
-            task='games_notification_task',
-            clocked=clocked_schedule,
-            args=json.dumps([self.id]),
-            one_off=True
-        )
+            all_users_ids = set()
+
+            for rule in RuleCharacteristic.objects.all().order_by('rule__time'):
+                users_ids = set()
+
+                if rule.query == 'equals':
+                    users_ids = set(UserCharacteristic.objects.filter(
+                        characteristic=rule.characteristic,
+                        value=rule.value,
+                        user__notifications=True
+                    ).values_list('user__telegram_id', flat=True))
+
+                if rule.query == 'lt':
+                    users_ids = set(UserCharacteristic.objects.filter(value__regex=r'^\d+$').annotate(
+                        int_value=Cast('value', output_field=IntegerField())
+                    ).filter(
+                        characteristic=rule.characteristic,
+                        int_value__lt=int(rule.value),
+                        user__notifications=True
+                    ).values_list('user__telegram_id', flat=True))
+
+                if rule.query == 'gt':
+                    users_ids = set(UserCharacteristic.objects.filter(value__regex=r'^\d+$').annotate(
+                        int_value=Cast('value', output_field=IntegerField())
+                    ).filter(
+                        characteristic=rule.characteristic,
+                        int_value__gt=int(rule.value),
+                        user__notifications=True
+                    ).values_list('user__telegram_id', flat=True))
+
+                users_ids = users_ids - all_users_ids
+                all_users_ids = all_users_ids | users_ids
+
+                if users_ids:
+                    info = Knowledge.objects.get(language='RU')
+                    info_delay = timedelta(hours=info.notifications_delay.hour, minutes=info.notifications_delay.minute)
+
+                    if datetime.now() + info_delay < self.datetime:
+                        send_delay = self.datetime - info_delay
+                    else:
+                        send_delay = datetime.now()
+
+                    send_time = send_delay + timedelta(hours=rule.rule.time.hour, minutes=rule.rule.time.minute)
+
+                    clocked_schedule = ClockedSchedule.objects.create(
+                        clocked_time=send_time - timedelta(hours=3)  # Минус для синхронизации UTC
+                    )
+
+                    PeriodicTask.objects.create(
+                        name=f'Telegram Notification {self.id} {rule.id} New',
+                        task='new_game_notification_task',
+                        clocked=clocked_schedule,
+                        args=json.dumps([self.id, list(users_ids)]),
+                        one_off=True
+                    )
+        elif self.status == 'canceled':
+            users_ids = set(self.players.all().values_list('user__telegram_id', flat=True))
+
+            clocked_schedule = ClockedSchedule.objects.create(
+                clocked_time=datetime.now() - timedelta(hours=3)  # Минус для синхронизации UTC
+            )
+
+            PeriodicTask.objects.create(
+                name=f'Telegram Notification {self.id} Canceled',
+                task='canceled_game_notification_task',
+                clocked=clocked_schedule,
+                args=json.dumps([self.id, list(users_ids)]),
+                one_off=True
+            )
 
     @property
     def free_space(self):
