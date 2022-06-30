@@ -1,6 +1,9 @@
 from telegram import Update, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, CallbackQueryHandler
 
+from io import BytesIO
+from django.core.files.images import ImageFile
+
 from telegram.ext import (
     CommandHandler,
     MessageHandler,
@@ -115,12 +118,20 @@ def reg_city(update: Update, context: CallbackContext):
     message.edit_text(Knowledge.objects.get(language='RU').reg_city + '\n\nВыбрано: ' + _selected_city.title)
     context.user_data['city'] = city_id
 
-    # user_photos = update.effective_user.get_profile_photos(limit=1).photos
-    #
-    # if len(user_photos) > 0:
-    #     user_photos = user_photos[0]
-    # else:
-    #     user_photos = None
+    image = None
+
+    try:
+        user_photos = update.effective_user.get_profile_photos(limit=1).photos
+
+        if user_photos:
+            for photo_sizes in user_photos:
+                photo = max(photo_sizes, key=lambda x: x['width'])
+                file_id = photo.file_id
+
+                image = BytesIO(context.bot.get_file(file_id).download_as_bytearray())
+                image = ImageFile(image, name=f'{update.effective_user.id}.jpg')
+    except:
+        pass
 
     # Создание объекта пользователя Telegram
     TelegramUser.objects.create(
@@ -130,7 +141,7 @@ def reg_city(update: Update, context: CallbackContext):
         telegram_id=update.effective_user.id,
         date_of_birth=context.user_data['birthday'],
         telegram_username=update.effective_user.username,
-        # telegram_img=user_photos
+        telegram_img=image
     )
 
     return ask_level(update, context)

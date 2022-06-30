@@ -34,6 +34,9 @@ class Game(models.Model):
 
     status = models.CharField(choices=GAME_STATUS, max_length=32, verbose_name='Статус')
 
+    send_t = models.DateTimeField(blank=True, null=True, verbose_name='Старт уведомлений')
+    rule_n = models.IntegerField(blank=True, null=True, verbose_name='Получат уведомления')
+
     def save(self, *args, **kwargs):
         super(Game, self).save(*args, **kwargs)
 
@@ -86,10 +89,31 @@ class Game(models.Model):
                     else:
                         send_delay = datetime.now()
 
-                    send_time = send_delay + timedelta(hours=rule.rule.time.hour, minutes=rule.rule.time.minute)
+                    send_t = send_delay + timedelta(hours=rule.rule.time.hour, minutes=rule.rule.time.minute)
+                    self.send_t = send_delay
+
+                    t_end = info.notifications_end
+                    t_start = info.notifications_start
+
+                    if t_end.hour < t_start.hour:
+                        dt_end = datetime(send_t.year, send_t.month, send_t.day, t_end.hour, t_end.minute)
+                        dt_start = datetime(send_t.year, send_t.month, send_t.day, t_start.hour, t_start.minute)
+                    else:
+                        if send_t.hour > t_end.hour:
+                            dt_end = datetime(send_t.year, send_t.month, send_t.day, t_end.hour, t_end.minute)
+                            dt_start = datetime(send_t.year, send_t.month, send_t.day, t_start.hour,
+                                                t_start.minute) + timedelta(days=1)
+                        else:
+                            dt_end = datetime(send_t.year, send_t.month, send_t.day, t_end.hour,
+                                              t_end.minute) - timedelta(days=1)
+                            dt_start = datetime(send_t.year, send_t.month, send_t.day, t_start.hour, t_start.minute)
+
+                    if dt_end < send_t < dt_start:
+                        send_t = dt_start + timedelta(hours=rule.rule.time.hour, minutes=rule.rule.time.minute)
+                        self.send_t = dt_start
 
                     clocked_schedule = ClockedSchedule.objects.create(
-                        clocked_time=send_time - timedelta(hours=3)  # Минус для синхронизации UTC
+                        clocked_time=send_t - timedelta(hours=3)  # Минус для синхронизации UTC
                     )
 
                     PeriodicTask.objects.create(
@@ -99,6 +123,12 @@ class Game(models.Model):
                         args=json.dumps([self.id, list(users_ids)]),
                         one_off=True
                     )
+            if all_users_ids:
+                self.rule_n = len(all_users_ids)
+            else:
+                self.rule_n = 0
+
+            super(Game, self).save(*args, **kwargs)
         elif self.status == 'canceled':
             users_ids = set(self.players.all().values_list('user__telegram_id', flat=True))
 

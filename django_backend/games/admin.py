@@ -16,7 +16,7 @@ class GameAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Дата и время игры', {
-            'fields': ('datetime',)
+            'fields': ('datetime', 'send_t', 'rule_n')
         }),
         ('Количество мест', {
             'fields': ('max_players', 'free_space')
@@ -30,7 +30,7 @@ class GameAdmin(admin.ModelAdmin):
     )
 
     list_filter = ('arena__city', 'status')
-    readonly_fields = ('free_space',)
+    readonly_fields = ('free_space', 'send_t', 'rule_n')
 
 
 @admin.register(TelegramUserGame)

@@ -35,6 +35,7 @@ services:
     build: ./nginx
     volumes:
       - static-volume:/home/app/backend/staticfiles
+      - media-volume:/home/app/backend/media
     ports:
       - '80:80'
     restart: always
