@@ -54,6 +54,9 @@ class KnowledgeAdmin(admin.ModelAdmin):
         ('Уведомления', {
             'fields': ('notifications_start', 'notifications_end', 'notifications_delay')
         }),
+        ('Опросы', {
+            'fields': ('polls_btn_send', 'polls_btn_cancel', 'polls_enter_text', 'polls_answer_ok')
+        })
     )
 
     readonly_fields = ('play_skill_params',)

@@ -19,6 +19,7 @@ import pytz
 from telegrambot.management.handlers import registration_handler
 from telegrambot.management.handlers import profile_handler
 from telegrambot.management.handlers import search_handler
+from telegrambot.management.handlers import polls_handler
 from telegrambot.management.handlers import friends_handler
 from telegrambot.management.handlers import user_games_handler
 from telegrambot.management.tools import notification_change
@@ -55,6 +56,9 @@ class Command(BaseCommand):
             dispatcher.add_handler(_handler)
 
         for _handler in user_games_handler.get_user_games_handlers():
+            dispatcher.add_handler(_handler)
+
+        for _handler in polls_handler.get_poll_handler():
             dispatcher.add_handler(_handler)
 
         updater.start_polling()

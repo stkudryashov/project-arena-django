@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'playtime.apps.PlaytimeConfig',
     'arenas.apps.ArenasConfig',
     'games.apps.GamesConfig',
+    'polls.apps.PollsConfig',
     'characteristics.apps.CharacteristicsConfig',
     'knowledges.apps.KnowledgesConfig',
     'telegrambot.apps.TelegrambotConfig',

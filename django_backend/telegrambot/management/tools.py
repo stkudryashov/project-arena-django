@@ -244,7 +244,7 @@ def time_hour(user, update: Update, context: CallbackContext):
 
 
 def get_user_or_notify(func):
-    # Ищет пользователя в БД, если не находит, отправляет текст, возвращает User или None
+    # Ищет пользователя в БД, если не находит, отправляет текст
 
     def wrapper(*args, **kwargs):
         update: Update = kwargs.get("update")
@@ -254,6 +254,15 @@ def get_user_or_notify(func):
             if update is None:
                 return
 
+        for arg in args:
+            if type(arg) == TelegramUser:
+                return func(*args, **kwargs)
+
+        for key in kwargs:
+            if key == 'user':
+                if kwargs["user"] is not None:
+                    return func(*args, **kwargs)
+
         telegram_id = update.effective_user.id
         user = TelegramUser.objects.filter(telegram_id=telegram_id).first()
 
@@ -261,8 +270,8 @@ def get_user_or_notify(func):
             update.effective_message.reply_text("У вас нет прав на использование этой команды")
             return
 
-        return func(*args, **kwargs, user=user)
-
+        kwargs["user"] = user
+        return func(*args, **kwargs)
     return wrapper
 
 

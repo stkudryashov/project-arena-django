@@ -91,6 +91,12 @@ class Knowledge(models.Model):
     notifications_end = models.TimeField(verbose_name='Конец уведомлений')
     notifications_delay = models.TimeField(verbose_name='Задержка до начала игры')
 
+    polls_btn_send = models.CharField(max_length=32, verbose_name='Кнопка "Отправить"')
+    polls_btn_cancel = models.CharField(max_length=32, verbose_name='Кнопка "Отменить"')
+
+    polls_enter_text = models.CharField(max_length=32, verbose_name='Запрос ответа на опрос')
+    polls_answer_ok = models.CharField(max_length=32, verbose_name='Ответ получен')
+
     def __str__(self):
         return f'{self.language}'
 

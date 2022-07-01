@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from characteristics.models import UserCharacteristic
+from polls.models import UserPoll
 from telegrambot.models import TelegramUser
 
 from import_export.admin import ExportMixin
@@ -27,10 +28,19 @@ class TelegramUserCharacteristic(admin.TabularInline):
     verbose_name_plural = 'Характеристики'
 
 
+class TelegramUserPoll(admin.TabularInline):
+    model = UserPoll
+    extra = 0
+    verbose_name_plural = 'Ответы на опросы'
+
+    readonly_fields = ('user', 'poll', 'answer')
+    can_delete = False
+
+
 @admin.register(TelegramUser)
 class TelegramUserAdmin(ExportMixin, admin.ModelAdmin):
     resource_class = TelegramUserResource
-    inlines = [TelegramUserCharacteristic]
+    inlines = [TelegramUserCharacteristic, TelegramUserPoll]
 
     fieldsets = (
         ('Основная информация', {
