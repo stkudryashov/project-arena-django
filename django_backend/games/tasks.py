@@ -14,7 +14,10 @@ from knowledges.models import Knowledge
 def new_game_notification_task(game_id, users_ids: list):
     bot = telegram.Bot(settings.TELEGRAM_TOKEN)
 
-    game = Game.objects.get(id=game_id)
+    game = Game.objects.filter(id=game_id).first()
+
+    if game is None:
+        return
 
     date = dateformat.format(game.datetime, 'd E')
     time = dateformat.time_format(game.datetime, 'H:i')
@@ -33,19 +36,22 @@ def new_game_notification_task(game_id, users_ids: list):
     )
 
     for telegram_id in users_ids:
-        if game.arena.photo:
-            bot.send_photo(
-                chat_id=telegram_id,
-                photo=game.arena.photo,
-                caption=message,
-                reply_markup=markup
-            )
-        else:
-            bot.send_message(
-                chat_id=telegram_id,
-                caption=message,
-                reply_markup=markup
-            )
+        try:
+            if Game.objects.filter(id=game_id).first().arena.photo:
+                bot.send_photo(
+                    chat_id=telegram_id,
+                    photo=Game.objects.filter(id=game_id).first().arena.photo,
+                    caption=message,
+                    reply_markup=markup
+                )
+            else:
+                bot.send_message(
+                    chat_id=telegram_id,
+                    text=message,
+                    reply_markup=markup
+                )
+        except Exception as e:
+            pass
 
 
 @shared_task(name='canceled_game_notification_task')
@@ -60,4 +66,7 @@ def canceled_game_notification_task(game_id, users_ids: list):
     message = f'Игра {date} {time} на манеже {game.arena.title} отменена'
 
     for telegram_id in users_ids:
-        bot.send_message(chat_id=telegram_id, text=message)
+        try:
+            bot.send_message(chat_id=telegram_id, text=message)
+        except Exception as e:
+            pass

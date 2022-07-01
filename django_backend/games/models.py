@@ -56,7 +56,8 @@ class Game(models.Model):
                     users_ids = set(UserCharacteristic.objects.filter(
                         characteristic=rule.characteristic,
                         value=rule.value,
-                        user__notifications=True
+                        user__notifications=True,
+                        user__city=self.arena.city
                     ).values_list('user__telegram_id', flat=True))
 
                 if rule.query == 'lt':
@@ -65,7 +66,8 @@ class Game(models.Model):
                     ).filter(
                         characteristic=rule.characteristic,
                         int_value__lt=int(rule.value),
-                        user__notifications=True
+                        user__notifications=True,
+                        user__city=self.arena.city
                     ).values_list('user__telegram_id', flat=True))
 
                 if rule.query == 'gt':
@@ -74,7 +76,8 @@ class Game(models.Model):
                     ).filter(
                         characteristic=rule.characteristic,
                         int_value__gt=int(rule.value),
-                        user__notifications=True
+                        user__notifications=True,
+                        user__city=self.arena.city
                     ).values_list('user__telegram_id', flat=True))
 
                 users_ids = users_ids - all_users_ids

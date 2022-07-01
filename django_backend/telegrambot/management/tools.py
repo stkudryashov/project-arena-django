@@ -294,13 +294,13 @@ def set_user_level(user, update: Update):
     level_index = callback_data.get('value')
 
     _levels = Knowledge.objects.get(language='RU').play_skill_params.strip().split(',')
-    level_value = _levels[level_index]
+    level_value = _levels[level_index].strip()
 
     characteristic_obj, is_get = Characteristic.objects.get_or_create(title='Уровень игры')
 
     if UserCharacteristic.objects.filter(user=user, characteristic=characteristic_obj).exists():
         u_characteristic = UserCharacteristic.objects.get(user=user, characteristic=characteristic_obj)
-        u_characteristic.value = level_value.strip()
+        u_characteristic.value = level_value
         u_characteristic.save()
     else:
         UserCharacteristic.objects.create(
