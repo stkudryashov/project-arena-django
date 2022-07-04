@@ -30,7 +30,7 @@ def new_poll_notification_task(poll_id, users_ids: list):
     for user_id in users_ids:
         try:
             if Poll.objects.filter(id=poll_id).first().photo:
-                bot.send_photo(chat_id=user_id, photo=Poll.objects.filter(id=poll_id).first().photo,
+                bot.send_photo(chat_id=user_id, photo=Poll.objects.filter(id=poll_id).first(),
                                caption=message_text, reply_markup=markup)
             else:
                 bot.send_message(chat_id=user_id, text=message_text, reply_markup=markup)

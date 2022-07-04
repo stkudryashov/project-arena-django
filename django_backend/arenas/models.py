@@ -26,7 +26,6 @@ class Arena(models.Model):
     phone_number = models.CharField(max_length=32, verbose_name='Номер телефона')
     description = models.TextField(verbose_name='Описание')
 
-    photo = models.ImageField(upload_to='arenas/', blank=True, verbose_name='Фото')
     logo = models.ImageField(upload_to='arenas/', blank=True, verbose_name='Логотип')
 
     def __str__(self):
@@ -35,3 +34,15 @@ class Arena(models.Model):
     class Meta:
         verbose_name = 'Манеж'
         verbose_name_plural = 'Манежи'
+
+
+class ArenaPhoto(models.Model):
+    arena = models.ForeignKey(Arena, on_delete=models.CASCADE, related_name='photos', verbose_name='Манеж')
+    photo = models.ImageField(upload_to='arenas/', blank=True, verbose_name='Фото')
+
+    def __str__(self):
+        return f'{self.arena} - {self.photo}'
+
+    class Meta:
+        verbose_name = 'Фото манежа'
+        verbose_name_plural = 'Фото манежей'

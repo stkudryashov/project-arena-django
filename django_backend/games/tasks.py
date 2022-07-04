@@ -30,17 +30,17 @@ def new_game_notification_task(game_id, users_ids: list):
 
     markup = InlineKeyboardMarkup(
         [[InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_about,
-                               callback_data=f'SearchAbout {game.id} {game.id - 1}'),
+                               callback_data=f'SearchAbout {game.id}'),
           InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_enter,
                                callback_data=f'SearchEnter {game.id}')]]
     )
 
     for telegram_id in users_ids:
         try:
-            if Game.objects.filter(id=game_id).first().arena.photo:
+            if Game.objects.filter(id=game_id).first().arena.photos.exists():
                 bot.send_photo(
                     chat_id=telegram_id,
-                    photo=Game.objects.filter(id=game_id).first().arena.photo,
+                    photo=Game.objects.filter(id=game_id).first().arena.photos.first().photo,
                     caption=message,
                     reply_markup=markup
                 )

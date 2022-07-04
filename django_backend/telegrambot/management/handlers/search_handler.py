@@ -1,4 +1,4 @@
-from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
 from telegram.ext import CallbackContext, CallbackQueryHandler
 
 from games.models import Game, TelegramUserGame
@@ -46,7 +46,7 @@ def search_games(update: Update, context: CallbackContext, last_id=None, is_back
 
     markup = InlineKeyboardMarkup(
         [[InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_about,
-                               callback_data=f'SearchAbout {current_game.id} {last_id}'),
+                               callback_data=f'SearchAbout {current_game.id}'),
           InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_enter,
                                callback_data=f'SearchEnter {current_game.id}')],
          [InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_back,
@@ -55,8 +55,8 @@ def search_games(update: Update, context: CallbackContext, last_id=None, is_back
                                callback_data=f'SearchNext {current_game.id}')]]
     )
 
-    if current_game.arena.photo:
-        update.effective_message.reply_photo(current_game.arena.photo, message, reply_markup=markup)
+    if current_game.arena.photos.exists():
+        update.effective_message.reply_photo(current_game.arena.photos.first().photo, message, reply_markup=markup)
     else:
         update.effective_message.reply_text(message, reply_markup=markup)
 
@@ -84,7 +84,7 @@ def search_join_game(update: Update, context: CallbackContext, game_id):
     return True
 
 
-def search_about(update: Update, context: CallbackContext, game_id, last_id):
+def search_about(update: Update, context: CallbackContext, game_id):
     """Информация о манеже"""
 
     current_game = Game.objects.filter(id=game_id).first()
@@ -94,15 +94,20 @@ def search_about(update: Update, context: CallbackContext, game_id, last_id):
               f'Телефон: {current_game.arena.phone_number}\n' \
               f'Адрес: {current_game.arena.address}\n'
 
-    markup = InlineKeyboardMarkup.from_column(
-        [InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_back,
-                              callback_data=f'SearchNext {last_id}')]
-    )
+    # markup = InlineKeyboardMarkup.from_column(
+    #     [InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_back,
+    #                           callback_data=f'SearchNext {last_id}')]
+    # )
 
-    if current_game.arena.photo:
-        update.effective_message.reply_photo(current_game.arena.photo, message, reply_markup=markup)
+    if current_game.arena.photos.exists():
+        media_group = []
+
+        for i, photo in enumerate(current_game.arena.photos.all()):
+            media_group.append(InputMediaPhoto(media=photo.photo, caption=message if i == 0 else ''))
+
+        update.effective_message.reply_media_group(media_group)
     else:
-        update.effective_message.reply_text(message, reply_markup=markup)
+        update.effective_message.reply_text(message)
 
 
 def search_callbacks(update: Update, context: CallbackContext):
@@ -143,11 +148,9 @@ def search_callbacks(update: Update, context: CallbackContext):
             search_join_game(update, context, button_press.data.split()[1])
     elif 'SearchAbout' in button_press.data:
         try:
-            button_press.message.delete()
+            pass
         except telegram.TelegramError:
             pass
         finally:
             game_id = button_press.data.split()[1]
-            last_id = button_press.data.split()[2]
-
-            search_about(update, context, game_id, last_id)
+            search_about(update, context, game_id)

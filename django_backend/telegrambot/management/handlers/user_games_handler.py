@@ -1,6 +1,6 @@
 from django.utils import dateformat
 
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
 from telegram.ext import CallbackContext, CallbackQueryHandler, MessageHandler, Filters
 
 from games.models import TelegramUserGame
@@ -48,8 +48,8 @@ def get_user_games(update: Update, context: CallbackContext, user: TelegramUser 
         buttons.append([InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_next,
                                              callback_data=f'MyGames next {current_game.id}')])
 
-    if game.arena.photo:
-        update.effective_message.reply_photo(game.arena.photo, message,
+    if game.arena.photos.exists():
+        update.effective_message.reply_photo(game.arena.photos.first().photo, message,
                                              reply_markup=InlineKeyboardMarkup(buttons))
     else:
         update.effective_message.reply_text(message, reply_markup=InlineKeyboardMarkup(buttons))
@@ -65,15 +65,20 @@ def get_about(update: Update, context: CallbackContext, user: TelegramUser, last
               f'Телефон: {current_game.arena.phone_number}\n' \
               f'Адрес: {current_game.arena.address}\n'
 
-    markup = InlineKeyboardMarkup.from_column(
-        [InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_back,
-                              callback_data=f'MyGames next {last_id}')]
-    )
+    # markup = InlineKeyboardMarkup.from_column(
+    #     [InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_back,
+    #                           callback_data=f'MyGames next {last_id}')]
+    # )
 
-    if current_game.arena.photo:
-        update.effective_message.reply_photo(current_game.arena.photo, message, reply_markup=markup)
+    if current_game.arena.photos.exists():
+        media_group = []
+
+        for i, photo in enumerate(current_game.arena.photos.all()):
+            media_group.append(InputMediaPhoto(media=photo.photo, caption=message if i == 0 else ''))
+
+        update.effective_message.reply_media_group(media_group)
     else:
-        update.effective_message.reply_text(message, reply_markup=markup)
+        update.effective_message.reply_text(message)
 
 
 def user_leave_game(update: Update, context: CallbackContext, user: TelegramUser, last_id=None):
@@ -96,7 +101,6 @@ def show_first_game(update: Update, context: CallbackContext, user: TelegramUser
 @get_user_or_notify
 def _user_game_handler(update: Update, context: CallbackContext, user: TelegramUser):
     button_press = update.callback_query
-
     button_data = button_press.data.split(" ")
 
     if button_data[0] != "MyGames":
