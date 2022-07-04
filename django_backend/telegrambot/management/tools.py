@@ -101,6 +101,9 @@ def get_menu_keyboard(telegram_id):
 
     user = TelegramUser.objects.filter(telegram_id=telegram_id).first()
 
+    if not user:
+        return
+
     if user.notifications:
         notifications = buttons.btn_notifications_on
     else:

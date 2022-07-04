@@ -10,8 +10,10 @@ from telegram.ext import (
 )
 
 from knowledges.models import Knowledge
-from polls.models import PollVariant, UserPoll
+from polls.models import PollVariant, UserPoll, Poll
 from telegrambot.management.tools import get_user_or_notify, send_menu
+
+from telegrambot.management.handlers.profile_handler import get_profile_handler
 
 
 def get_user_answer(update: Update, context: CallbackContext, user, answer_id):
@@ -46,7 +48,6 @@ def collect_user_answer(update: Update, context: CallbackContext, answer_id=None
         context.user_data['poll'] = {'answer_id': answer_id, 'text': ''}
 
         keyboard = [
-            [Knowledge.objects.get(language='RU').polls_btn_send],
             [Knowledge.objects.get(language='RU').polls_btn_cancel]
         ]
 
@@ -57,6 +58,26 @@ def collect_user_answer(update: Update, context: CallbackContext, answer_id=None
     else:
         if update.message.text:
             user_data_poll['text'] += '\n' + update.message.text
+
+            poll = Poll.objects.filter(id=user_data_poll.get('answer_id')).first()
+
+            if poll is None:
+                return ConversationHandler.END
+
+            user_answer, is_created = UserPoll.objects.get_or_create(user=user, poll=poll)
+
+            user_answer.answer = user_data_poll.get('text')
+            user_answer.save()
+
+            context.user_data.clear()
+
+            try:
+                update.effective_message.edit_text(Knowledge.objects.get(language='RU').polls_answer_ok)
+            except Exception as e:
+                update.effective_message.reply_text(Knowledge.objects.get(language='RU').polls_answer_ok)
+
+            send_menu(update)
+            return ConversationHandler.END
     return 0
 
 
@@ -67,38 +88,6 @@ def drop_collect(update: Update, context: CallbackContext, user=None):
     context.user_data.clear()
     send_menu(update)
 
-    return ConversationHandler.END
-
-
-@get_user_or_notify
-def send_collect(update: Update, context: CallbackContext, user=None):
-    """Сохраняет ответ пользователя при опросе с развернутым ответом"""
-
-    user_poll_data = context.user_data.get('poll')
-
-    if user_poll_data is None:
-        return ConversationHandler.END
-
-    poll_answer = PollVariant.objects.filter(id=user_poll_data.get('answer_id')).first()
-
-    if poll_answer is None:
-        return ConversationHandler.END
-
-    poll = poll_answer.poll
-
-    user_answer, is_created = UserPoll.objects.get_or_create(user=user, poll=poll)
-
-    user_answer.answer = user_poll_data.get('text')
-    user_answer.save()
-
-    context.user_data.clear()
-
-    try:
-        update.effective_message.edit_text(Knowledge.objects.get(language='RU').polls_answer_ok)
-    except Exception as e:
-        update.effective_message.reply_text(Knowledge.objects.get(language='RU').polls_answer_ok)
-
-    send_menu(update)
     return ConversationHandler.END
 
 
@@ -124,9 +113,5 @@ def get_poll_handler():
         states={0: [MessageHandler(~Filters.text([Knowledge.objects.get(language='RU').polls_btn_send]) &
                                    ~Filters.text([Knowledge.objects.get(language='RU').polls_btn_cancel]) &
                                    Filters.text & ~Filters.command, collect_user_answer)]},
-        fallbacks=[CommandHandler('menu', drop_collect),
-                   CommandHandler('cancel', drop_collect),
-                   CommandHandler('send', send_collect),
-                   MessageHandler(Filters.text([Knowledge.objects.get(language='RU').polls_btn_send]), send_collect),
-                   MessageHandler(Filters.text([Knowledge.objects.get(language='RU').polls_btn_cancel]), drop_collect)
+        fallbacks=[MessageHandler(Filters.text([Knowledge.objects.get(language='RU').polls_btn_cancel]), drop_collect)
                    ]), CallbackQueryHandler(_poll_handler, pattern=r'^Poll')

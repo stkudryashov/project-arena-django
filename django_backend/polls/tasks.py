@@ -4,10 +4,11 @@ from django.conf import settings
 import telegram
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
+from knowledges.models import Knowledge
 from polls.models import Poll
 
 
-@shared_task(name="new_poll_notification_task")
+@shared_task(name='new_poll_notification_task')
 def new_poll_notification_task(poll_id, users_ids: list):
     bot = telegram.Bot(settings.TELEGRAM_TOKEN)
 
@@ -19,11 +20,12 @@ def new_poll_notification_task(poll_id, users_ids: list):
     message_text = poll.description
     inline_keyboard = []
 
-    for answer in poll.answers.all():
-        inline_keyboard.append([InlineKeyboardButton(
-            answer.text,
-            callback_data=f"Poll {'answer' if not answer.is_open else 'open_answer'} {answer.id}"
-        )])
+    if poll.is_open:
+        inline_keyboard.append([InlineKeyboardButton(Knowledge.objects.get(language='RU').polls_btn_send,
+                                                     callback_data=f'Poll open_answer {poll.id}')])
+    else:
+        for answer in poll.answers.all():
+            inline_keyboard.append([InlineKeyboardButton(answer.text, callback_data=f'Poll answer {answer.id}')])
 
     markup = InlineKeyboardMarkup(inline_keyboard)
 

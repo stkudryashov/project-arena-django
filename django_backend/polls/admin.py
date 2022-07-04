@@ -8,18 +8,39 @@ class PollVariantInLine(admin.TabularInline):
     verbose_name_plural = 'Ответы'
 
 
-# Register your models here.
 @admin.register(Poll)
 class PollAdmin(admin.ModelAdmin):
-    list_display = ('title', 'datetime', 'description', 'photo', 'city')
+    list_display = ('title', 'datetime', 'city', 'is_open', 'is_start')
     inlines = [PollVariantInLine]
+
+    TYPE_MESSAGE_HELP = ' '.join(['<p>Если требует развернутого ответа, то игнорирует<br/>',
+                                  'прикрепленные варианты, отправляя кнопку "Ответить".<br/><br/>',
+                                  'Если активен вывод при регистрации, то игнорирует<br/>',
+                                  'все остальное, отправляя в порядке "Дата отправки".</p>'])
+
+    fieldsets = (
+        ('Настройка', {
+            'fields': ('title', 'datetime')
+        }),
+        ('Город', {
+            'fields': ('city',),
+            'description': 'Если город не выбран, отправляет всем пользователям'
+        }),
+        ('Сообщение', {
+            'fields': ('description', 'photo')
+        }),
+        ('Тип сообщения', {
+            'fields': ('is_open', 'is_start'),
+            'description': TYPE_MESSAGE_HELP
+        })
+    )
 
 
 @admin.register(PollVariant)
-class TelegramUserGameAdmin(admin.ModelAdmin):
-    list_display = ('poll', 'text', "is_open")
+class PollVariantAdmin(admin.ModelAdmin):
+    list_display = ('poll', 'text')
 
 
 @admin.register(UserPoll)
-class TelegramUserGameAdmin(admin.ModelAdmin):
+class UserPollAdmin(admin.ModelAdmin):
     list_display = ('user', 'poll', 'answer')

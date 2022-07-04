@@ -1,3 +1,5 @@
+import time
+
 from telegram import Update, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, CallbackQueryHandler
 
@@ -21,6 +23,7 @@ from telegrambot.management.tools import (
 from knowledges.models import Knowledge
 from characteristics.models import Characteristic, UserCharacteristic
 from arenas.models import City
+from polls.models import Poll
 
 from telegrambot.models import TelegramUser
 
@@ -34,8 +37,16 @@ def ask_phone(update: Update, context: CallbackContext):
 
     if TelegramUser.objects.filter(telegram_id=update.effective_user.id).exists():
         send_menu(update)
-
         return ConversationHandler.END
+
+    start_messages = Poll.objects.filter(is_start=True)
+
+    if start_messages.exists():
+        for message in start_messages:
+            if message.photo:
+                update.effective_message.reply_photo(photo=message.photo, caption=message.description)
+            else:
+                update.effective_message.reply_text(text=message.description)
 
     update.effective_message.reply_text(Knowledge.objects.get(language='RU').reg_phone_number)
     return ProfileStatus.REG_PHONE

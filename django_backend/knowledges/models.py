@@ -95,7 +95,7 @@ class Knowledge(models.Model):
 
     notifications_game_canceled = models.CharField(max_length=64, verbose_name='Игра была отменена')
 
-    polls_btn_send = models.CharField(max_length=32, verbose_name='Кнопка "Отправить"')
+    polls_btn_send = models.CharField(max_length=32, verbose_name='Кнопка "Ответить"')
     polls_btn_cancel = models.CharField(max_length=32, verbose_name='Кнопка "Отменить"')
 
     polls_enter_text = models.CharField(max_length=32, verbose_name='Запрос ответа на опрос')

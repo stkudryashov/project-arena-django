@@ -59,8 +59,6 @@ def start_change(update: Update, context: CallbackContext):
 
     update.effective_message.reply_text(profile_info, reply_markup=markup)
 
-    return ProfileStatus.DISTRIBUTE
-
 
 def ask_phone(update: Update, context: CallbackContext):
     update.effective_message.reply_text(Knowledge.objects.get(language='RU').reg_phone_number)
@@ -285,7 +283,7 @@ def distribute(update: Update, context: CallbackContext):
         context.user_data['value_name'] = command
         return ask_value(update, context)
 
-    message.reply_text(Knowledge.objects.get(language='RU').edit_please_select_buttons)
+    return ConversationHandler.END
 
 
 def end_change(update: Update, context: CallbackContext):
@@ -294,9 +292,20 @@ def end_change(update: Update, context: CallbackContext):
 
 
 def get_profile_handler():
+    buttons = Knowledge.objects.get(language='RU')
+
+    names = [buttons.btn_edit_name, buttons.btn_edit_date_of_birth, buttons.btn_edit_city,
+             buttons.btn_edit_phone, buttons.btn_edit_level, buttons.btn_edit_playtime,
+             buttons.btn_back_menu]
+
+    characteristics = Characteristic.objects.filter(show_in_menu=True).exclude(title='Уровень игры')
+
+    if characteristics:
+        characteristics_list = list(characteristics.values_list('title', flat=True))
+        names.extend(characteristics_list)
+
     return ConversationHandler(
-        entry_points=[CommandHandler('edit_profile', start_change),
-                      MessageHandler(Filters.regex("^(👤 Профиль)$"), start_change)],
+        entry_points=[MessageHandler(Filters.text(names) & ~Filters.command, distribute)],
         states={
             ProfileStatus.DISTRIBUTE: [MessageHandler(Filters.text & ~Filters.command, distribute)],
             ProfileStatus.ASK_PHONE: [MessageHandler(Filters.text & ~Filters.command, ask_phone)],

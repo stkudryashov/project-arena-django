@@ -170,13 +170,13 @@ def end_friend_lookup(update: Update, context: CallbackContext):
 
 
 def get_friends_handlers():
-    return MessageHandler(Filters.regex("^(👥 Друзья)$"), show_user_friend_list), \
+    button_friends = Knowledge.objects.get(language='RU').btn_friends
+
+    return MessageHandler(Filters.text([button_friends]), show_user_friend_list), \
            ConversationHandler(
                entry_points=[CommandHandler('add_friend', ask_friend_telegram_username),
                              CallbackQueryHandler(_friends_handler, pattern=r'^Friends new')],
-               states={
-                   0: [MessageHandler(Filters.text & ~Filters.command, find_friend)],
-               },
+               states={0: [MessageHandler(Filters.text & ~Filters.command, find_friend)], },
                fallbacks=[CommandHandler('menu', end_friend_lookup), CommandHandler('cancel', end_friend_lookup)]
            ), \
            CallbackQueryHandler(_friends_handler, pattern=r'^Friends')

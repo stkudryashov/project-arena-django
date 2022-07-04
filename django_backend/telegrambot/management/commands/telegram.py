@@ -41,7 +41,8 @@ class Command(BaseCommand):
         dispatcher = updater.dispatcher
 
         dispatcher.add_handler(registration_handler.get_registration_handler())
-        dispatcher.add_handler(profile_handler.get_profile_handler())
+        dispatcher.add_handler(MessageHandler(Filters.text([Knowledge.objects.get(language='RU').btn_profile]),
+                                              profile_handler.start_change))
 
         dispatcher.add_handler(CallbackQueryHandler(search_handler.search_callbacks, pattern=r'^Search'))
         dispatcher.add_handler(MessageHandler(Filters.text([buttons.btn_future_games]), search_handler.search_games))
@@ -51,6 +52,8 @@ class Command(BaseCommand):
 
         dispatcher.add_handler(MessageHandler(Filters.text([buttons.btn_back_menu]),
                                               registration_handler.start_registration))
+
+        dispatcher.add_handler(profile_handler.get_profile_handler())
 
         for _handler in friends_handler.get_friends_handlers():
             dispatcher.add_handler(_handler)
