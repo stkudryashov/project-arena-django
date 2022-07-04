@@ -31,6 +31,12 @@ class Arena(models.Model):
     def __str__(self):
         return f'{self.address} - {self.city}'
 
+    def print(self):
+        return f'Название: {self.title}\n' \
+               f'Описание: {self.description}\n' \
+               f'Телефон: {self.phone_number}\n' \
+               f'Адрес: {self.address}\n'
+
     class Meta:
         verbose_name = 'Манеж'
         verbose_name_plural = 'Манежи'

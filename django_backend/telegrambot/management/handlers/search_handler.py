@@ -35,14 +35,7 @@ def search_games(update: Update, context: CallbackContext, last_id=None, is_back
         update.effective_message.reply_text(Knowledge.objects.get(language='RU').msg_games_empty)
         return
 
-    date = dateformat.format(current_game.datetime, 'd E')
-    time = dateformat.time_format(current_game.datetime, 'H:i')
-
-    message = f'Дата игры: {date} {time}\n' \
-              f'Максимально игроков: {current_game.max_players}\n' \
-              f'Свободно мест: {current_game.free_space}\n' \
-              f'Цена участия: {current_game.price}\n' \
-              f'Манеж: {current_game.arena.title}\n'
+    message = current_game.print()
 
     markup = InlineKeyboardMarkup(
         [[InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_about,
@@ -89,10 +82,7 @@ def search_about(update: Update, context: CallbackContext, game_id):
 
     current_game = Game.objects.filter(id=game_id).first()
 
-    message = f'Название: {current_game.arena.title}\n' \
-              f'Описание: {current_game.arena.description}\n' \
-              f'Телефон: {current_game.arena.phone_number}\n' \
-              f'Адрес: {current_game.arena.address}\n'
+    message = current_game.arena.print()
 
     # markup = InlineKeyboardMarkup.from_column(
     #     [InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_back,

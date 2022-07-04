@@ -29,11 +29,7 @@ def get_user_games(update: Update, context: CallbackContext, user: TelegramUser 
     date = dateformat.format(game.datetime, 'd E')
     time = dateformat.time_format(game.datetime, 'H:i')
 
-    message = f'Дата игры: {date} {time}\n' \
-              f'Максимально игроков: {game.max_players}\n' \
-              f'Свободно мест: {game.free_space}\n' \
-              f'Цена участия: {game.price}\n' \
-              f'Адрес манежа: {game.arena.address}\n'
+    message = game.print()
 
     buttons = [
         [
@@ -60,10 +56,7 @@ def get_about(update: Update, context: CallbackContext, user: TelegramUser, last
 
     current_game = TelegramUserGame.objects.filter(id=last_id).first().game
 
-    message = f'Название: {current_game.arena.title}\n' \
-              f'Описание: {current_game.arena.description}\n' \
-              f'Телефон: {current_game.arena.phone_number}\n' \
-              f'Адрес: {current_game.arena.address}\n'
+    message = current_game.arena.print()
 
     # markup = InlineKeyboardMarkup.from_column(
     #     [InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_back,

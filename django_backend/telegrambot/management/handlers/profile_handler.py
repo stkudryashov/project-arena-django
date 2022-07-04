@@ -40,9 +40,17 @@ def start_change(update: Update, context: CallbackContext):
 
     profile_info = f'Имя: {user.username}\n' \
                    f'Телефон: {user.phone_number}\n' \
-                   f'Дата рождения: {date_of_birth.day}.{date_of_birth.month}.{date_of_birth.year}\n'
+                   f'Дата рождения: {date_of_birth.day}.{date_of_birth.month}.{date_of_birth.year}\n\n'
 
-    for characteristic in Characteristic.objects.filter(show_in_menu=True):
+    extra_char_1 = UserCharacteristic.objects.filter(user=user, characteristic__title='Цифровой рейтинг').first()
+    profile_info += f'{extra_char_1.characteristic.title}: {extra_char_1.value}\n'
+
+    extra_char_2 = UserCharacteristic.objects.filter(user=user, characteristic__title='Рейтинг надежности').first()
+    profile_info += f'{extra_char_2.characteristic.title}: {extra_char_2.value}\n'
+
+    exclude_values = ['Цифровой рейтинг', 'Рейтинг надежности']
+
+    for characteristic in Characteristic.objects.filter(show_in_menu=True).exclude(title__in=exclude_values):
         if UserCharacteristic.objects.filter(user=user, characteristic=characteristic).exists():
             value = UserCharacteristic.objects.filter(user=user, characteristic=characteristic).first().value
             profile_info += f'{characteristic.title}: {value}\n'

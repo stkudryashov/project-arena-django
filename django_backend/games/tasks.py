@@ -19,14 +19,7 @@ def new_game_notification_task(game_id, users_ids: list):
     if game is None:
         return
 
-    date = dateformat.format(game.datetime, 'd E')
-    time = dateformat.time_format(game.datetime, 'H:i')
-
-    message = f'Дата игры: {date} {time}\n' \
-              f'Максимально игроков: {game.max_players}\n' \
-              f'Свободно мест: {game.free_space}\n' \
-              f'Цена участия: {game.price}\n' \
-              f'Манеж: {game.arena.title}\n'
+    message = game.print()
 
     markup = InlineKeyboardMarkup(
         [[InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_about,
@@ -63,7 +56,8 @@ def canceled_game_notification_task(game_id, users_ids: list):
     date = dateformat.format(game.datetime, 'd E')
     time = dateformat.time_format(game.datetime, 'H:i')
 
-    message = f'Игра {date} {time} на манеже {game.arena.title} отменена'
+    message = Knowledge.objects.get(language='RU').notifications_game_canceled
+    message += f'\n\n{date} {time} {game.arena.title}'
 
     for telegram_id in users_ids:
         try:

@@ -21,6 +21,8 @@ class Knowledge(models.Model):
     success_reg = models.TextField(verbose_name='Успешная регистрация')
 
     play_skill_params = models.CharField(max_length=64, verbose_name='Уровни игры')
+    reliable_params = models.CharField(max_length=64, verbose_name='Рейтинг надежности')
+    digital_start = models.IntegerField(verbose_name='Цифровой рейтинг')
 
     time_unselect_emoji = models.CharField(max_length=16, verbose_name='Эмодзи (не выбрано)')
     time_select_emoji = models.CharField(max_length=16, verbose_name='Эмодзи (выбрано)')
@@ -90,6 +92,8 @@ class Knowledge(models.Model):
     notifications_start = models.TimeField(verbose_name='Старт уведомлений')
     notifications_end = models.TimeField(verbose_name='Конец уведомлений')
     notifications_delay = models.TimeField(verbose_name='Задержка до начала игры')
+
+    notifications_game_canceled = models.CharField(max_length=64, verbose_name='Игра была отменена')
 
     polls_btn_send = models.CharField(max_length=32, verbose_name='Кнопка "Отправить"')
     polls_btn_cancel = models.CharField(max_length=32, verbose_name='Кнопка "Отменить"')

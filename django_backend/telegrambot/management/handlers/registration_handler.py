@@ -19,6 +19,7 @@ from telegrambot.management.tools import (
 )
 
 from knowledges.models import Knowledge
+from characteristics.models import Characteristic, UserCharacteristic
 from arenas.models import City
 
 from telegrambot.models import TelegramUser
@@ -163,6 +164,23 @@ def reg_level(update: Update, context: CallbackContext):
         return start_registration(update, context)
 
     set_user_level(user, update)
+
+    characteristic_obj, is_get = Characteristic.objects.get_or_create(title='Цифровой рейтинг')
+
+    UserCharacteristic.objects.create(
+        value=Knowledge.objects.get(language='RU').digital_start,
+        characteristic=characteristic_obj,
+        user=user
+    )
+
+    characteristic_obj, is_get = Characteristic.objects.get_or_create(title='Рейтинг надежности')
+    _reliable = Knowledge.objects.get(language='RU').reliable_params.strip().split(',')[-1].strip()
+
+    UserCharacteristic.objects.create(
+        value=_reliable,
+        characteristic=characteristic_obj,
+        user=user
+    )
 
     return ask_time_day(update, context)
 

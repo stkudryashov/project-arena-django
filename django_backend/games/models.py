@@ -1,5 +1,6 @@
 from datetime import timedelta
 from django.db import models
+from django.utils import dateformat
 
 from django_celery_beat.models import ClockedSchedule, PeriodicTask
 
@@ -36,6 +37,16 @@ class Game(models.Model):
 
     send_t = models.DateTimeField(blank=True, null=True, verbose_name='Старт уведомлений')
     rule_n = models.IntegerField(blank=True, null=True, verbose_name='Получат уведомления')
+
+    def print(self):
+        date = dateformat.format(self.datetime, 'd E')
+        time = dateformat.time_format(self.datetime, 'H:i')
+
+        return f'Дата игры: {date} {time}\n' \
+               f'Максимально игроков: {self.max_players}\n' \
+               f'Свободно мест: {self.free_space}\n' \
+               f'Цена участия: {self.price}\n' \
+               f'Манеж: {self.arena.title}\n'
 
     def save(self, *args, **kwargs):
         super(Game, self).save(*args, **kwargs)

@@ -21,6 +21,12 @@ class KnowledgeAdmin(admin.ModelAdmin):
         ('Уровни игры (через запятую)', {
             'fields': ('play_skill_params',)
         }),
+        ('Рейтинг надежности (через запятую)', {
+            'fields': ('reliable_params',)
+        }),
+        ('Стартовый цифровой рейтинг', {
+            'fields': ('digital_start',)
+        }),
         ('Выбор времени', {
             'fields': ('time_unselect_emoji', 'time_select_emoji', 'btn_continue_time')
         }),
@@ -52,14 +58,14 @@ class KnowledgeAdmin(admin.ModelAdmin):
                        'friends_btn_decline')
         }),
         ('Уведомления', {
-            'fields': ('notifications_start', 'notifications_end', 'notifications_delay')
+            'fields': ('notifications_start', 'notifications_end', 'notifications_delay', 'notifications_game_canceled')
         }),
         ('Опросы', {
             'fields': ('polls_btn_send', 'polls_btn_cancel', 'polls_enter_text', 'polls_answer_ok')
         })
     )
 
-    readonly_fields = ('play_skill_params',)
+    readonly_fields = ('play_skill_params', 'reliable_params')
 
     list_display = ('language',)
     list_display_links = ('language',)
