@@ -2,6 +2,7 @@ from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKe
 from telegram.ext import CallbackContext, CallbackQueryHandler
 
 from games.models import Game, TelegramUserGame
+from games.tasks import notify_friends_about_game
 from knowledges.models import Knowledge
 from telegrambot.models import TelegramUser
 
@@ -74,6 +75,16 @@ def search_join_game(update: Update, context: CallbackContext, game_id):
     game.players.create(user=user)
     update.effective_message.reply_text(Knowledge.objects.get(language='RU').search_enter)
 
+    if user.friends.all().exists():
+        markup = InlineKeyboardMarkup.from_row([
+            InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_game_friends_yes,
+                                 callback_data=f'SearchNotify True {game_id}'),
+            InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_game_friends_no,
+                                 callback_data='SearchNotify False')
+        ])
+
+        update.effective_message.reply_text(Knowledge.objects.get(language='RU').msg_game_friends, reply_markup=markup)
+
     return True
 
 
@@ -144,3 +155,16 @@ def search_callbacks(update: Update, context: CallbackContext):
         finally:
             game_id = button_press.data.split()[1]
             search_about(update, context, game_id)
+    elif 'SearchNotify' in button_press.data:
+        try:
+            button_press.message.delete()
+        except telegram.TelegramError:
+            pass
+        finally:
+            answer = button_press.data.split()[1]
+
+            if answer == 'True':
+                notify_friends_about_game.delay(update.effective_user.id, button_press.data.split()[2])
+                update.effective_user.send_message('Уведомления отправлены ✅')
+            else:
+                update.effective_user.send_message(Knowledge.objects.get(language='RU').msg_game_friends_no)

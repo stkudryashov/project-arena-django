@@ -67,6 +67,11 @@ class Knowledge(models.Model):
 
     msg_games_empty = models.CharField(max_length=64, verbose_name='Сообщение о конце поиска')
 
+    msg_game_friends = models.CharField(max_length=64, verbose_name='Текст "Уведомить друзей"')
+    msg_game_friends_no = models.CharField(max_length=64, verbose_name='Текст "Отказался уведомить"')
+    btn_game_friends_yes = models.CharField(max_length=32, verbose_name='Кнопка "Уведомить"')
+    btn_game_friends_no = models.CharField(max_length=32, verbose_name='Кнопка "Не нужно"')
+
     friends_text = models.CharField(max_length=64, verbose_name='Старт добавления друга')
     friends_enter_text = models.CharField(max_length=64, verbose_name='Запрос имени друга')
 

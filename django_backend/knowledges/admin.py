@@ -48,6 +48,9 @@ class KnowledgeAdmin(admin.ModelAdmin):
             'fields': ('btn_search_about', 'btn_search_enter', 'btn_search_back', 'btn_search_next', 'search_enter',
                        'search_already_enter', 'search_not_free_space', 'msg_games_empty')
         }),
+        ('Уведомления для друзей', {
+            'fields': ('msg_game_friends', 'msg_game_friends_no', 'btn_game_friends_yes', 'btn_game_friends_no')
+        }),
         ('Мои игры', {
             'fields': ('my_games_no_games', 'my_games_cancel_btn', 'my_games_cancel_text')
         }),
