@@ -13,22 +13,18 @@ def get_user_games(update: Update, context: CallbackContext, user: TelegramUser 
     current_game = None
 
     if last_id:
-        current_game = TelegramUserGame.objects.filter(user=user, pk__gt=last_id).order_by('id').exclude(
-            status=TelegramUserGame.PLAYER_STATUS[2][0]).first()
+        current_game = TelegramUserGame.objects.filter(user=user, pk__gt=last_id).exclude(
+            status='refused').exclude(game__status__in=['is_over', 'canceled']).first()
 
     if current_game is None:
-        current_game = TelegramUserGame.objects.filter(user=user).order_by('id').exclude(
-            status=TelegramUserGame.PLAYER_STATUS[2][0]).first()
+        current_game = TelegramUserGame.objects.filter(user=user).exclude(
+            status='refused').exclude(game__status__in=['is_over', 'canceled']).first()
 
     if current_game is None:
         update.effective_message.reply_text(Knowledge.objects.get(language='RU').my_games_no_games)
         return
 
     game = current_game.game
-
-    date = dateformat.format(game.datetime, 'd E')
-    time = dateformat.time_format(game.datetime, 'H:i')
-
     message = game.print()
 
     buttons = [
@@ -40,7 +36,7 @@ def get_user_games(update: Update, context: CallbackContext, user: TelegramUser 
         ]
     ]
 
-    if user.games.exclude(status=TelegramUserGame.PLAYER_STATUS[2][0]).count() > 1:
+    if user.games.exclude(status='refused').count() > 1:
         buttons.append([InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_next,
                                              callback_data=f'MyGames next {current_game.id}')])
 
@@ -55,7 +51,6 @@ def get_about(update: Update, context: CallbackContext, user: TelegramUser, last
     """Информация о манеже"""
 
     current_game = TelegramUserGame.objects.filter(id=last_id).first().game
-
     message = current_game.arena.print()
 
     # markup = InlineKeyboardMarkup.from_column(
@@ -94,22 +89,22 @@ def show_first_game(update: Update, context: CallbackContext, user: TelegramUser
 @get_user_or_notify
 def _user_game_handler(update: Update, context: CallbackContext, user: TelegramUser):
     button_press = update.callback_query
-    button_data = button_press.data.split(" ")
+    button_data = button_press.data.split(' ')
 
-    if button_data[0] != "MyGames":
+    if button_data[0] != 'MyGames':
         return
 
     command = button_data[1]
 
-    if command == "leave":
+    if command == 'leave':
         last_id = button_data[2]
         user_leave_game(update, context, user, last_id)
 
-    elif command == "next":
+    elif command == 'next':
         last_id = button_data[2]
         get_user_games(update, context, user, last_id)
 
-    elif command == "about":
+    elif command == 'about':
         last_id = button_data[2]
         get_about(update, context, user, last_id)
 

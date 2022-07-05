@@ -23,7 +23,7 @@ class Knowledge(models.Model):
 
     play_skill_params = models.CharField(max_length=64, verbose_name='Уровни игры')
     reliable_params = models.CharField(max_length=64, verbose_name='Рейтинг надежности')
-    digital_start = models.IntegerField(verbose_name='Цифровой рейтинг')
+    digital_start = models.IntegerField(verbose_name='Цифровой рейтинг', default=0)
 
     time_unselect_emoji = models.CharField(max_length=16, verbose_name='Эмодзи (не выбрано)')
     time_select_emoji = models.CharField(max_length=16, verbose_name='Эмодзи (выбрано)')
@@ -106,6 +106,9 @@ class Knowledge(models.Model):
 
     polls_enter_text = models.CharField(max_length=32, verbose_name='Запрос ответа на опрос')
     polls_answer_ok = models.CharField(max_length=32, verbose_name='Ответ получен')
+
+    reserve_percent = models.PositiveIntegerField(verbose_name='Процент резервных мест', default=50)
+    reserve_message = models.TextField(verbose_name='Текст "Есть резервные места"')
 
     def __str__(self):
         return f'{self.language}'

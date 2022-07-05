@@ -54,6 +54,9 @@ class KnowledgeAdmin(admin.ModelAdmin):
         ('Мои игры', {
             'fields': ('my_games_no_games', 'my_games_cancel_btn', 'my_games_cancel_text')
         }),
+        ('Резервные места', {
+            'fields': ('reserve_percent', 'reserve_message')
+        }),
         ('Поиск друзей', {
             'fields': ('friends_text', 'friends_enter_text', 'friends_404_text', 'friends_invite_msg',
                        'friends_already_text', 'friends_is_you_text', 'friends_send_text', 'friends_request_text',

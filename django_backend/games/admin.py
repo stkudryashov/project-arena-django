@@ -14,23 +14,29 @@ class GameAdmin(admin.ModelAdmin):
     list_display = ('datetime', 'arena', 'max_players', 'free_space', 'price', 'status')
     inlines = [TelegramUserGameInLine]
 
+    STATUS_HELP = ' '.join(['<p>Уведомления для набора будут отправлены только при статусе "Ожидает".</p>'])
+
     fieldsets = (
         ('Дата и время игры', {
             'fields': ('datetime', 'send_t', 'rule_n')
         }),
         ('Количество мест', {
-            'fields': ('max_players', 'free_space')
+            'fields': ('max_players', 'free_space', 'reserve_count')
         }),
         ('Цена участия', {
             'fields': ('price',)
         }),
         ('Место проведения', {
-            'fields': ('arena', 'status')
+            'fields': ('arena',)
+        }),
+        ('Статус игры (видно в поиске при статусе "Ожидает")', {
+            'fields': ('status',),
+            'description': STATUS_HELP
         })
     )
 
     list_filter = ('arena__city', 'status')
-    readonly_fields = ('free_space', 'send_t', 'rule_n')
+    readonly_fields = ('free_space', 'reserve_count', 'send_t', 'rule_n')
 
 
 @admin.register(TelegramUserGame)

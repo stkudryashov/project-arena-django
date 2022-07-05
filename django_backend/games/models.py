@@ -29,6 +29,7 @@ class Game(models.Model):
 
     GAME_STATUS = (
         ('pending', 'Ожидает'),
+        ('recruitment_done', 'Набор закончен'),
         ('is_over', 'Закончена'),
         ('canceled', 'Отменена'),
     )
@@ -37,6 +38,34 @@ class Game(models.Model):
 
     send_t = models.DateTimeField(blank=True, null=True, verbose_name='Старт уведомлений')
     rule_n = models.IntegerField(blank=True, null=True, verbose_name='Получат уведомления')
+
+    @property
+    def free_space(self):
+        """Число свободных мест в игре"""
+
+        space = self.max_players - self.players.filter(status__in=['signed_up', 'confirmed']).count()
+        return space if space > 0 else 0
+    free_space.fget.short_description = 'Свободно мест'
+
+    @property
+    def reserve_count(self):
+        """Число свободных резервных мест в игре"""
+
+        reserve_percent = Knowledge.objects.get(language='RU').reserve_percent
+        return int(self.max_players * (reserve_percent / 100)) - self.players.filter(status='reserve').count()
+    reserve_count.fget.short_description = 'Резервных мест'
+
+    @property
+    def has_space(self):
+        """Есть ли свободные места в игре"""
+
+        return self.free_space > 0
+
+    @property
+    def has_reserve_space(self):
+        """Есть ли свободные резервные места в игре"""
+
+        return self.reserve_count > 0
 
     def print(self):
         date = dateformat.format(self.datetime, 'd E')
@@ -158,27 +187,6 @@ class Game(models.Model):
                 one_off=True
             )
 
-    @property
-    def free_space(self):
-        """Число свободных мест в игре"""
-
-        space = self.max_players - self.players.all().count()
-        return space if space > 0 else 0
-
-    free_space.fget.short_description = 'Свободно мест'
-
-    @property
-    def has_space(self):
-        """Есть ли свободные места в игре"""
-
-        return self.free_space > 0
-
-    # @property
-    # def is_end(self):
-    #     """Закончилась ли игра"""
-    #
-    #     return self.datetime < datetime.now()
-
     def __str__(self):
         return f'{self.datetime} - {self.arena}'
 
@@ -199,6 +207,7 @@ class TelegramUserGame(models.Model):
     PLAYER_STATUS = (
         ('signed_up', 'Записался'),
         ('confirmed', 'Подтвердил'),
+        ('reserve', 'В резерве'),
         ('refused', 'Отказался'),
     )
 

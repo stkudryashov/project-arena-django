@@ -69,8 +69,18 @@ def search_join_game(update: Update, context: CallbackContext, game_id):
         return False
 
     if not game.has_space:
-        update.effective_message.reply_text(Knowledge.objects.get(language='RU').search_not_free_space)
-        return False
+        if game.has_reserve_space:
+            game.players.create(user=user, status='reserve')
+            update.effective_message.reply_text(Knowledge.objects.get(language='RU').reserve_message)
+
+            if game.has_reserve_space == 0:
+                game.status = 'recruitment_done'
+                game.save()
+                
+            return True
+        else:
+            update.effective_message.reply_text(Knowledge.objects.get(language='RU').search_not_free_space)
+            return False
 
     game.players.create(user=user)
     update.effective_message.reply_text(Knowledge.objects.get(language='RU').search_enter)

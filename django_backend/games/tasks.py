@@ -90,25 +90,29 @@ def notify_friends_about_game(user_id, game_id):
                                callback_data=f'SearchEnter {game.id}')]]
     )
 
-    for friend_id in list(user.friends.all().values_list('friend__telegram_id', flat=True)):
-        try:
-            bot.send_message(
-                chat_id=friend_id,
-                text=f'Ваш друг @{user.telegram_username} приглашает вас поучаствовать в игре!'
-            )
+    friends_ids = list(user.friends.all().exclude(
+        friend__games__game_id=game_id).values_list('friend__telegram_id', flat=True))
 
-            if Game.objects.filter(id=game_id).first().arena.photos.exists():
-                bot.send_photo(
-                    chat_id=friend_id,
-                    photo=Game.objects.filter(id=game_id).first().arena.photos.first().photo,
-                    caption=message,
-                    reply_markup=markup
-                )
-            else:
+    if friends_ids:
+        for friend_id in friends_ids:
+            try:
                 bot.send_message(
                     chat_id=friend_id,
-                    text=message,
-                    reply_markup=markup
+                    text=f'Ваш друг @{user.telegram_username} приглашает вас поучаствовать в игре!'
                 )
-        except Exception as e:
-            pass
+
+                if Game.objects.filter(id=game_id).first().arena.photos.exists():
+                    bot.send_photo(
+                        chat_id=friend_id,
+                        photo=Game.objects.filter(id=game_id).first().arena.photos.first().photo,
+                        caption=message,
+                        reply_markup=markup
+                    )
+                else:
+                    bot.send_message(
+                        chat_id=friend_id,
+                        text=message,
+                        reply_markup=markup
+                    )
+            except Exception as e:
+                pass
