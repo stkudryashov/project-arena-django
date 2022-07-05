@@ -16,7 +16,7 @@ class KnowledgeAdmin(admin.ModelAdmin):
             'fields': ('error_phone_number', 'error_username', 'error_date_of_birth', 'error_city')
         }),
         ('Сообщение после регистрации', {
-            'fields': ('success_reg',)
+            'fields': ('success_reg', 'friends_reg')
         }),
         ('Уровни игры (через запятую)', {
             'fields': ('play_skill_params',)

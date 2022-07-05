@@ -19,6 +19,7 @@ class Knowledge(models.Model):
     error_city = models.CharField(max_length=128, verbose_name='Ошибка города')
 
     success_reg = models.TextField(verbose_name='Успешная регистрация')
+    friends_reg = models.TextField(verbose_name='Текст "Добавь друга"')
 
     play_skill_params = models.CharField(max_length=64, verbose_name='Уровни игры')
     reliable_params = models.CharField(max_length=64, verbose_name='Рейтинг надежности')

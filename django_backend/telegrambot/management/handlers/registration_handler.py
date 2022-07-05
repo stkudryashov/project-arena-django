@@ -13,6 +13,8 @@ from telegram.ext import (
     ConversationHandler,
 )
 
+from telegrambot.management.handlers.friends_handler import show_user_friend_list
+
 from telegrambot.management.tools import (
     get_callback_as_dict,
     prepare_inline_keyboard,
@@ -221,8 +223,10 @@ def reg_finish(update: Update, context: CallbackContext):
     """Отправляет сообщение об окончании регистрации"""
 
     update.effective_message.reply_text(Knowledge.objects.get(language='RU').success_reg)
-
     send_menu(update)
+
+    update.effective_message.reply_text(Knowledge.objects.get(language='RU').friends_reg)
+    show_user_friend_list(update, context)
 
     return ConversationHandler.END
 
