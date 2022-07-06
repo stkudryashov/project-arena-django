@@ -64,7 +64,9 @@ class KnowledgeAdmin(admin.ModelAdmin):
                        'friends_btn_decline')
         }),
         ('Уведомления', {
-            'fields': ('notifications_start', 'notifications_end', 'notifications_delay', 'notifications_game_canceled')
+            'fields': ('notifications_start', 'notifications_end', 'notifications_delay', 'notifications_game_canceled',
+                       'notifications_confirm_text', 'notifications_confirm', 'notifications_confirm_wait',
+                       'btn_notify_game_yes', 'btn_notify_game_no')
         }),
         ('Опросы', {
             'fields': ('polls_btn_send', 'polls_btn_cancel', 'polls_enter_text', 'polls_answer_ok')

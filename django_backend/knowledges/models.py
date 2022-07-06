@@ -99,7 +99,14 @@ class Knowledge(models.Model):
     notifications_end = models.TimeField(verbose_name='Конец уведомлений')
     notifications_delay = models.TimeField(verbose_name='Задержка до начала игры')
 
+    notifications_confirm_text = models.TextField(verbose_name='Текст "Подтвердите участие"')
+    notifications_confirm = models.TimeField(verbose_name='Отправить подтверждение')
+    notifications_confirm_wait = models.TimeField(verbose_name='Время на подтверждение')
+
     notifications_game_canceled = models.CharField(max_length=64, verbose_name='Игра была отменена')
+
+    btn_notify_game_yes = models.CharField(max_length=32, verbose_name='Кнопка "Подтвердить участие"')
+    btn_notify_game_no = models.CharField(max_length=32, verbose_name='Кнопка "Отказаться от игры"')
 
     polls_btn_send = models.CharField(max_length=32, verbose_name='Кнопка "Ответить"')
     polls_btn_cancel = models.CharField(max_length=32, verbose_name='Кнопка "Отменить"')

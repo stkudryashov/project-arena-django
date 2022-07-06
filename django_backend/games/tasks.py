@@ -6,6 +6,9 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from games.models import Game
 
 import telegram
+import time
+
+from datetime import timedelta
 
 from knowledges.models import Knowledge
 from telegrambot.models import TelegramUser
@@ -16,7 +19,6 @@ def new_game_notification_task(game_id, users_ids: list):
     bot = telegram.Bot(settings.TELEGRAM_TOKEN)
 
     game = Game.objects.filter(id=game_id).first()
-
     if game is None:
         return
 
@@ -72,12 +74,10 @@ def notify_friends_about_game(user_id, game_id):
     bot = telegram.Bot(settings.TELEGRAM_TOKEN)
 
     user = TelegramUser.objects.filter(telegram_id=user_id).first()
-
     if user is None:
         return
 
     game = Game.objects.filter(id=game_id).first()
-
     if game is None:
         return
 
@@ -114,5 +114,40 @@ def notify_friends_about_game(user_id, game_id):
                         text=message,
                         reply_markup=markup
                     )
+            except Exception as e:
+                pass
+
+
+@shared_task(name='notify_game_confirm')
+def notify_game_confirm(game_id):
+    bot = telegram.Bot(settings.TELEGRAM_TOKEN)
+
+    game = Game.objects.filter(id=game_id).first()
+    if game is None:
+        return
+
+    info = Knowledge.objects.get(language='RU')
+    message = info.notifications_confirm_text
+
+    markup = InlineKeyboardMarkup(
+        [[InlineKeyboardButton(info.btn_notify_game_yes, callback_data=f'SearchConfirm {game.id}'),
+          InlineKeyboardButton(info.btn_notify_game_no, callback_data=f'SearchDecline {game.id}')]]
+    )
+
+    for user_id in list(game.players.filter(status='signed_up').values_list('user__telegram_id', flat=True)):
+        try:
+            bot.send_message(chat_id=user_id, text=message, reply_markup=markup)
+        except Exception as e:
+            pass
+
+    wait_time = timedelta(hours=info.notifications_confirm_wait.hour, minutes=info.notifications_confirm_wait.minute)
+    time.sleep(wait_time.total_seconds())
+
+    game.players.filter(status='signed_up').update(status='refused')
+
+    if game.has_space:
+        for user_id in list(game.players.filter(status='reserve').values_list('user__telegram_id', flat=True)):
+            try:
+                bot.send_message(chat_id=user_id, text='РЕЗЕРВ', reply_markup=markup)
             except Exception as e:
                 pass

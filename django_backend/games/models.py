@@ -172,7 +172,24 @@ class Game(models.Model):
                 self.rule_n = 0
 
             super(Game, self).save(*args, **kwargs)
-        elif self.status == 'canceled':
+
+        if self.status == 'pending' or self.status == 'recruitment_done':
+            info = Knowledge.objects.get(language='RU')
+            confirm_time = timedelta(hours=info.notifications_confirm.hour, minutes=info.notifications_confirm.minute)
+
+            clocked_schedule = ClockedSchedule.objects.create(
+                clocked_time=self.datetime - confirm_time - timedelta(hours=3)  # Минус для синхронизации UTC
+            )
+
+            PeriodicTask.objects.create(
+                name=f'Telegram Notification {self.id} Confirm',
+                task='notify_game_confirm',
+                clocked=clocked_schedule,
+                args=json.dumps([self.id]),
+                one_off=True
+            )
+
+        if self.status == 'canceled':
             users_ids = set(self.players.all().values_list('user__telegram_id', flat=True))
 
             clocked_schedule = ClockedSchedule.objects.create(

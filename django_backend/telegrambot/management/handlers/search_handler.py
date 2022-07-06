@@ -5,6 +5,7 @@ from games.models import Game, TelegramUserGame
 from games.tasks import notify_friends_about_game
 from knowledges.models import Knowledge
 from telegrambot.models import TelegramUser
+from characteristics.models import UserCharacteristic
 
 from django.db.models import Q
 from datetime import datetime
@@ -178,3 +179,37 @@ def search_callbacks(update: Update, context: CallbackContext):
                 update.effective_user.send_message('Уведомления отправлены ✅')
             else:
                 update.effective_user.send_message(Knowledge.objects.get(language='RU').msg_game_friends_no)
+    elif 'SearchConfirm' in button_press.data:
+        try:
+            button_press.message.delete()
+        except telegram.TelegramError:
+            pass
+        finally:
+            game = Game.objects.get(id=button_press.data.split()[1])
+
+            if game.players.filter(user__telegram_id=update.effective_user.id, status='refused').exists():
+                update.effective_user.send_message('Вы не успели подтвердить свое участие в игре ❌')
+            else:
+                if game.players.filter(user__telegram_id=update.effective_user.id, status='signed_up').exists():
+                    game.players.filter(user__telegram_id=update.effective_user.id).update(status='confirmed')
+                    update.effective_user.send_message('Вы подтвердили участие ✅')
+
+
+                if game.players.filter(user__telegram_id=update.effective_user.id, status='reserve'):
+                    if game.has_space:
+                        game.players.filter(user__telegram_id=update.effective_user.id).update(status='confirmed')
+                        update.effective_user.send_message('Вы подтвердили участие ✅')
+                    else:
+                        update.effective_user.send_message('К сожалению места закончились 😥')
+    elif 'SearchDecline' in button_press.data:
+        try:
+            button_press.message.delete()
+        except telegram.TelegramError:
+            pass
+        finally:
+            game = Game.objects.get(id=button_press.data.split()[1])
+
+            if game.players.filter(user__telegram_id=update.effective_user.id, status='reserve').exists():
+                update.effective_user.send_message('Резервная запись отменена ❌')
+            else:
+                update.effective_user.send_message('Запись отменена ❌')
