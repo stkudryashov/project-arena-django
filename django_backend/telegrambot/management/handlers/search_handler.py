@@ -74,6 +74,11 @@ def search_join_game(update: Update, context: CallbackContext, game_id):
             game.players.create(user=user, status='reserve')
             update.effective_message.reply_text(Knowledge.objects.get(language='RU').reserve_message)
 
+            characteristic = UserCharacteristic.objects.get(user=user, characteristic__title='Цифровой рейтинг')
+
+            characteristic.value = int(characteristic.value) + 1
+            characteristic.save()
+
             if game.has_reserve_space == 0:
                 game.status = 'recruitment_done'
                 game.save()
@@ -194,11 +199,21 @@ def search_callbacks(update: Update, context: CallbackContext):
                     game.players.filter(user__telegram_id=update.effective_user.id).update(status='confirmed')
                     update.effective_user.send_message('Вы подтвердили участие ✅')
 
+                    user = TelegramUser.objects.get(telegram_id=update.effective_user.id)
+                    characteristic = UserCharacteristic.objects.get(user=user, characteristic__title='Цифровой рейтинг')
 
+                    characteristic.value = int(characteristic.value) + 3
+                    characteristic.save()
                 if game.players.filter(user__telegram_id=update.effective_user.id, status='reserve'):
                     if game.has_space:
                         game.players.filter(user__telegram_id=update.effective_user.id).update(status='confirmed')
                         update.effective_user.send_message('Вы подтвердили участие ✅')
+
+                        user = TelegramUser.objects.get(telegram_id=update.effective_user.id)
+                        characteristic = UserCharacteristic.objects.get(user=user, characteristic__title='Цифровой рейтинг')
+
+                        characteristic.value = int(characteristic.value) + 3
+                        characteristic.save()
                     else:
                         update.effective_user.send_message('К сожалению места закончились 😥')
     elif 'SearchDecline' in button_press.data:

@@ -100,6 +100,7 @@ class Knowledge(models.Model):
     notifications_delay = models.TimeField(verbose_name='Задержка до начала игры')
 
     notifications_confirm_text = models.TextField(verbose_name='Текст "Подтвердите участие"')
+    notifications_confirm_reserve = models.TextField(verbose_name='Текст "Резервное подтверждение"')
     notifications_confirm = models.TimeField(verbose_name='Отправить подтверждение')
     notifications_confirm_wait = models.TimeField(verbose_name='Время на подтверждение')
 

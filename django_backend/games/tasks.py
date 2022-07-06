@@ -12,6 +12,7 @@ from datetime import timedelta
 
 from knowledges.models import Knowledge
 from telegrambot.models import TelegramUser
+from characteristics.models import UserCharacteristic
 
 
 @shared_task(name='new_game_notification_task')
@@ -127,7 +128,12 @@ def notify_game_confirm(game_id):
         return
 
     info = Knowledge.objects.get(language='RU')
-    message = info.notifications_confirm_text
+
+    _date = dateformat.format(game.datetime, 'd E')
+    _time = dateformat.time_format(game.datetime, 'H:i')
+
+    message = f'\n\n{_date} {_time} {game.arena.title}\n\n'
+    message += info.notifications_confirm_text
 
     markup = InlineKeyboardMarkup(
         [[InlineKeyboardButton(info.btn_notify_game_yes, callback_data=f'SearchConfirm {game.id}'),
@@ -143,11 +149,22 @@ def notify_game_confirm(game_id):
     wait_time = timedelta(hours=info.notifications_confirm_wait.hour, minutes=info.notifications_confirm_wait.minute)
     time.sleep(wait_time.total_seconds())
 
+    refused_users = game.players.filter(status='signed_up')
+
+    for user in refused_users:
+        characteristic = UserCharacteristic.objects.get(user=user.user, characteristic__title='Цифровой рейтинг')
+
+        characteristic.value = int(characteristic.value) - 5
+        characteristic.save()
+
     game.players.filter(status='signed_up').update(status='refused')
 
     if game.has_space:
+        message = f'\n\n{_date} {_time} {game.arena.title}\n\n'
+        message += info.notifications_confirm_reserve
+
         for user_id in list(game.players.filter(status='reserve').values_list('user__telegram_id', flat=True)):
             try:
-                bot.send_message(chat_id=user_id, text='РЕЗЕРВ', reply_markup=markup)
+                bot.send_message(chat_id=user_id, text=message, reply_markup=markup)
             except Exception as e:
                 pass
