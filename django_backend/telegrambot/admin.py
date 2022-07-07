@@ -27,6 +27,9 @@ class TelegramUserCharacteristic(admin.TabularInline):
     extra = 0
     verbose_name_plural = 'Характеристики'
 
+    readonly_fields = ('user', 'characteristic', 'value')
+    can_delete = False
+
 
 class TelegramUserPoll(admin.TabularInline):
     model = UserPoll

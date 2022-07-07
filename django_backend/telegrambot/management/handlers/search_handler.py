@@ -63,6 +63,10 @@ def search_join_game(update: Update, context: CallbackContext, game_id):
     if user is None:
         return False
 
+    if user.is_banned:
+        update.effective_message.reply_text(Knowledge.objects.get(language='RU').is_banned_text)
+        return False
+
     game = Game.objects.filter(id=game_id).first()
 
     if game.players.all().filter(user=user).exists():
@@ -85,6 +89,9 @@ def search_join_game(update: Update, context: CallbackContext, game_id):
                 
             return True
         else:
+            game.status = 'recruitment_done'
+            game.save()
+
             update.effective_message.reply_text(Knowledge.objects.get(language='RU').search_not_free_space)
             return False
 
@@ -108,7 +115,6 @@ def search_about(update: Update, context: CallbackContext, game_id):
     """Информация о манеже"""
 
     current_game = Game.objects.filter(id=game_id).first()
-
     message = current_game.arena.print()
 
     # markup = InlineKeyboardMarkup.from_column(
@@ -125,6 +131,34 @@ def search_about(update: Update, context: CallbackContext, game_id):
         update.effective_message.reply_media_group(media_group)
     else:
         update.effective_message.reply_text(message)
+
+
+def up_user_reliable(user):
+    reliable_up_games = Knowledge.objects.get(language='RU').reliable_up_games
+    is_confirmed = True
+
+    for user_game in user.games.order_by('-game__datetime')[:reliable_up_games]:
+        if user_game.status != 'confirmed':
+            is_confirmed = False
+
+    if is_confirmed:
+        characteristic = UserCharacteristic.objects.get(
+            user=user,
+            characteristic__title='Рейтинг надежности')
+
+        _r = Knowledge.objects.get(language='RU').reliable_params.strip().replace(' ', '').split(',')
+        user_reliable_index = _r.index(characteristic.value)
+
+        if user_reliable_index < len(_r) - 1:
+            characteristic.value = _r[user_reliable_index + 1]
+            characteristic.save()
+
+
+def up_user_digital(user):
+    characteristic = UserCharacteristic.objects.get(user=user, characteristic__title='Цифровой рейтинг')
+
+    characteristic.value = int(characteristic.value) + 3
+    characteristic.save()
 
 
 def search_callbacks(update: Update, context: CallbackContext):
@@ -200,20 +234,18 @@ def search_callbacks(update: Update, context: CallbackContext):
                     update.effective_user.send_message('Вы подтвердили участие ✅')
 
                     user = TelegramUser.objects.get(telegram_id=update.effective_user.id)
-                    characteristic = UserCharacteristic.objects.get(user=user, characteristic__title='Цифровой рейтинг')
 
-                    characteristic.value = int(characteristic.value) + 3
-                    characteristic.save()
+                    up_user_digital(user)
+                    up_user_reliable(user)
                 if game.players.filter(user__telegram_id=update.effective_user.id, status='reserve'):
                     if game.has_space:
                         game.players.filter(user__telegram_id=update.effective_user.id).update(status='confirmed')
                         update.effective_user.send_message('Вы подтвердили участие ✅')
 
                         user = TelegramUser.objects.get(telegram_id=update.effective_user.id)
-                        characteristic = UserCharacteristic.objects.get(user=user, characteristic__title='Цифровой рейтинг')
 
-                        characteristic.value = int(characteristic.value) + 3
-                        characteristic.save()
+                        up_user_digital(user)
+                        up_user_reliable(user)
                     else:
                         update.effective_user.send_message('К сожалению места закончились 😥')
     elif 'SearchDecline' in button_press.data:
@@ -227,4 +259,34 @@ def search_callbacks(update: Update, context: CallbackContext):
             if game.players.filter(user__telegram_id=update.effective_user.id, status='reserve').exists():
                 update.effective_user.send_message('Резервная запись отменена ❌')
             else:
+                update.effective_user.send_message('Запись отменена ❌')
+    elif 'SearchLeave' in button_press.data:
+        try:
+            button_press.message.delete()
+        except telegram.TelegramError:
+            pass
+        finally:
+            answer = button_press.data.split()[1]
+
+            if answer == 'True':
+                game = TelegramUserGame.objects.get(id=button_press.data.split()[2])
+
+                game.status = 'refused'
+                game.save()
+
+                characteristic = UserCharacteristic.objects.get(
+                    user=game.user,
+                    characteristic__title='Рейтинг надежности'
+                )
+
+                _reliable = Knowledge.objects.get(language='RU').reliable_params.strip().replace(' ', '').split(',')
+                user_reliable_index = _reliable.index(characteristic.value)
+
+                if user_reliable_index > 0:
+                    characteristic.value = _reliable[user_reliable_index - 1]
+                    characteristic.save()
+                else:
+                    game.user.is_banned = True
+                    game.user.save()
+
                 update.effective_user.send_message('Запись отменена ❌')

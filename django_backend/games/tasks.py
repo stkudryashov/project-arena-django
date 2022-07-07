@@ -70,6 +70,25 @@ def canceled_game_notification_task(game_id, users_ids: list):
             pass
 
 
+@shared_task(name='end_game_notification_task')
+def end_game_notification_task(game_id, users_ids: list):
+    bot = telegram.Bot(settings.TELEGRAM_TOKEN)
+
+    game = Game.objects.get(id=game_id)
+
+    date = dateformat.format(game.datetime, 'd E')
+    time = dateformat.time_format(game.datetime, 'H:i')
+
+    message = Knowledge.objects.get(language='RU').notifications_game_end
+    message += f'\n\n{date} {time} {game.arena.title}'
+
+    for telegram_id in users_ids:
+        try:
+            bot.send_message(chat_id=telegram_id, text=message)
+        except Exception as e:
+            pass
+
+
 @shared_task(name='notify_friends_about_game')
 def notify_friends_about_game(user_id, game_id):
     bot = telegram.Bot(settings.TELEGRAM_TOKEN)
@@ -152,10 +171,21 @@ def notify_game_confirm(game_id):
     refused_users = game.players.filter(status='signed_up')
 
     for user in refused_users:
-        characteristic = UserCharacteristic.objects.get(user=user.user, characteristic__title='Цифровой рейтинг')
+        characteristic_1 = UserCharacteristic.objects.get(user=user.user, characteristic__title='Цифровой рейтинг')
 
-        characteristic.value = int(characteristic.value) - 5
-        characteristic.save()
+        characteristic_1.value = int(characteristic_1.value) - 5
+        characteristic_1.save()
+
+        characteristic_2 = UserCharacteristic.objects.get(user=user.user, characteristic__title='Рейтинг надежности')
+        _reliable = Knowledge.objects.get(language='RU').reliable_params.strip().replace(' ', '').split(',')
+        user_reliable_index = _reliable.index(characteristic_2.value)
+
+        if user_reliable_index > 0:
+            characteristic_2.value = _reliable[user_reliable_index - 1]
+            characteristic_2.save()
+        else:
+            user.user.is_banned = True
+            user.user.save()
 
     game.players.filter(status='signed_up').update(status='refused')
 

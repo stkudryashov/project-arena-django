@@ -57,7 +57,7 @@ def collect_user_answer(update: Update, context: CallbackContext, answer_id=None
         )
     else:
         if update.message.text:
-            user_data_poll['text'] += '\n' + update.message.text
+            user_data_poll['text'] += update.message.text
 
             poll = Poll.objects.filter(id=user_data_poll.get('answer_id')).first()
 
@@ -70,11 +70,7 @@ def collect_user_answer(update: Update, context: CallbackContext, answer_id=None
             user_answer.save()
 
             context.user_data.clear()
-
-            try:
-                update.effective_message.edit_text(Knowledge.objects.get(language='RU').polls_answer_ok)
-            except Exception as e:
-                update.effective_message.reply_text(Knowledge.objects.get(language='RU').polls_answer_ok)
+            update.effective_message.reply_text(Knowledge.objects.get(language='RU').polls_answer_ok)
 
             send_menu(update)
             return ConversationHandler.END

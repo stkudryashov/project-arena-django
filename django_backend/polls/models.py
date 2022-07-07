@@ -53,6 +53,7 @@ class Poll(models.Model):
     class Meta:
         verbose_name = 'Сообщение'
         verbose_name_plural = 'Сообщения'
+        ordering = ('-is_start', '-datetime')
 
 
 class PollVariant(models.Model):

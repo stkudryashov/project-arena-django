@@ -1,3 +1,5 @@
+from datetime import timedelta, datetime
+
 from django.utils import dateformat
 
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
@@ -76,9 +78,22 @@ def user_leave_game(update: Update, context: CallbackContext, user: TelegramUser
         update.effective_message.reply_text("Произошла ошибка. Игра не была найдена, а это странно..")
         return
 
-    game.delete()
+    safe_time_info = Knowledge.objects.get(language='RU').my_games_safe_time
+    safe_time = timedelta(hours=safe_time_info.hour, minutes=safe_time_info.minute)
 
-    update.effective_message.reply_text(Knowledge.objects.get(language='RU').my_games_cancel_text)
+    if game.game.datetime - safe_time < datetime.now():
+        markup = InlineKeyboardMarkup.from_row([
+            InlineKeyboardButton(Knowledge.objects.get(language='RU').my_games_btn_yes,
+                                 callback_data=f'SearchLeave True {game.id}'),
+            InlineKeyboardButton(Knowledge.objects.get(language='RU').my_games_btn_no,
+                                 callback_data='SearchLeave False')
+        ])
+
+        update.effective_message.reply_text(
+            Knowledge.objects.get(language='RU').my_games_wrong_text, reply_markup=markup)
+    else:
+        game.delete()
+        update.effective_message.reply_text(Knowledge.objects.get(language='RU').my_games_cancel_text)
 
 
 @get_user_or_notify

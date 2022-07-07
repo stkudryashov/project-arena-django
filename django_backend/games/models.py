@@ -189,6 +189,21 @@ class Game(models.Model):
                 one_off=True
             )
 
+        if self.status == 'is_over':
+            users_ids = set(self.players.filter(status='confirmed').values_list('user__telegram_id', flat=True))
+
+            clocked_schedule = ClockedSchedule.objects.create(
+                clocked_time=datetime.now() - timedelta(hours=3)  # Минус для синхронизации UTC
+            )
+
+            PeriodicTask.objects.create(
+                name=f'Telegram Notification {self.id} End',
+                task='end_game_notification_task',
+                clocked=clocked_schedule,
+                args=json.dumps([self.id, list(users_ids)]),
+                one_off=True
+            )
+
         if self.status == 'canceled':
             users_ids = set(self.players.all().values_list('user__telegram_id', flat=True))
 

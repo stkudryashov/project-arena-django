@@ -25,6 +25,8 @@ class Knowledge(models.Model):
     reliable_params = models.CharField(max_length=64, verbose_name='Рейтинг надежности')
     digital_start = models.IntegerField(verbose_name='Цифровой рейтинг', default=0)
 
+    reliable_up_games = models.PositiveIntegerField(verbose_name='Игр подряд для повышения', default=2)
+
     time_unselect_emoji = models.CharField(max_length=16, verbose_name='Эмодзи (не выбрано)')
     time_select_emoji = models.CharField(max_length=16, verbose_name='Эмодзи (выбрано)')
 
@@ -95,6 +97,12 @@ class Knowledge(models.Model):
     my_games_cancel_btn = models.CharField(max_length=32, verbose_name='Кнопка "Отменить запись"')
     my_games_cancel_text = models.CharField(max_length=64, verbose_name='Текст отмены записи')
 
+    my_games_safe_time = models.TimeField(verbose_name='За сколько до игры можно снять запись')
+    my_games_wrong_text = models.TextField(verbose_name='Текст "Рейтинг упадет"')
+
+    my_games_btn_yes = models.CharField(max_length=32, verbose_name='Кнопка "Уверен"')
+    my_games_btn_no = models.CharField(max_length=32, verbose_name='Кнопка "Оставить запись"')
+
     notifications_start = models.TimeField(verbose_name='Старт уведомлений')
     notifications_end = models.TimeField(verbose_name='Конец уведомлений')
     notifications_delay = models.TimeField(verbose_name='Задержка до начала игры')
@@ -105,6 +113,7 @@ class Knowledge(models.Model):
     notifications_confirm_wait = models.TimeField(verbose_name='Время на подтверждение')
 
     notifications_game_canceled = models.CharField(max_length=64, verbose_name='Игра была отменена')
+    notifications_game_end = models.CharField(max_length=64, verbose_name='Игра завершилась')
 
     btn_notify_game_yes = models.CharField(max_length=32, verbose_name='Кнопка "Подтвердить участие"')
     btn_notify_game_no = models.CharField(max_length=32, verbose_name='Кнопка "Отказаться от игры"')
@@ -117,6 +126,8 @@ class Knowledge(models.Model):
 
     reserve_percent = models.PositiveIntegerField(verbose_name='Процент резервных мест', default=50)
     reserve_message = models.TextField(verbose_name='Текст "Есть резервные места"')
+
+    is_banned_text = models.TextField(verbose_name='Текст "Вам заблокированы игры"')
 
     def __str__(self):
         return f'{self.language}'
