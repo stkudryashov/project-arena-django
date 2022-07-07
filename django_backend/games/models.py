@@ -74,6 +74,7 @@ class Game(models.Model):
         return f'Дата игры: {date} {time}\n' \
                f'Максимально игроков: {self.max_players}\n' \
                f'Свободно мест: {self.free_space}\n' \
+               f'Резервных мест: {self.reserve_count}\n' \
                f'Цена участия: {self.price}\n' \
                f'Манеж: {self.arena.title}\n'
 
