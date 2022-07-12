@@ -157,7 +157,7 @@ class Game(models.Model):
                         self.send_t = dt_start
 
                     clocked_schedule = ClockedSchedule.objects.create(
-                        clocked_time=send_t - timedelta(hours=3)  # Минус для синхронизации UTC
+                        clocked_time=send_t - timedelta(hours=7)  # Минус для синхронизации UTC
                     )
 
                     PeriodicTask.objects.create(
@@ -179,7 +179,7 @@ class Game(models.Model):
             confirm_time = timedelta(hours=info.notifications_confirm.hour, minutes=info.notifications_confirm.minute)
 
             clocked_schedule = ClockedSchedule.objects.create(
-                clocked_time=self.datetime - confirm_time - timedelta(hours=3)  # Минус для синхронизации UTC
+                clocked_time=self.datetime - confirm_time - timedelta(hours=7)  # Минус для синхронизации UTC
             )
 
             PeriodicTask.objects.create(
@@ -194,7 +194,7 @@ class Game(models.Model):
             users_ids = set(self.players.filter(status='confirmed').values_list('user__telegram_id', flat=True))
 
             clocked_schedule = ClockedSchedule.objects.create(
-                clocked_time=datetime.now() - timedelta(hours=3)  # Минус для синхронизации UTC
+                clocked_time=datetime.now() - timedelta(hours=7)  # Минус для синхронизации UTC
             )
 
             PeriodicTask.objects.create(
@@ -209,7 +209,7 @@ class Game(models.Model):
             users_ids = set(self.players.all().values_list('user__telegram_id', flat=True))
 
             clocked_schedule = ClockedSchedule.objects.create(
-                clocked_time=datetime.now() - timedelta(hours=3)  # Минус для синхронизации UTC
+                clocked_time=datetime.now() - timedelta(hours=7)  # Минус для синхронизации UTC
             )
 
             PeriodicTask.objects.create(

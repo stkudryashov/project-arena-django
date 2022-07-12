@@ -39,7 +39,7 @@ class Poll(models.Model):
 
         if users_ids and not self.is_start:
             clocked_schedule = ClockedSchedule.objects.create(
-                clocked_time=self.datetime - timedelta(hours=3)  # Минус для синхронизации UTC
+                clocked_time=self.datetime - timedelta(hours=7)  # Минус для синхронизации UTC
             )
 
             PeriodicTask.objects.create(
