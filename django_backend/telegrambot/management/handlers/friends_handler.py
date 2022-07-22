@@ -51,7 +51,8 @@ def find_friend(update: Update, context: CallbackContext):
     if user is None:
         return
 
-    found_user = TelegramUser.objects.filter(telegram_username=friend_telegram_username).first()
+    found_user = TelegramUser.objects.filter(telegram_username=friend_telegram_username
+                                             ).exclude(telegram_username='anon').first()
 
     if found_user is None:
         update.effective_message.reply_text(Knowledge.objects.get(language='RU').friends_404_text)

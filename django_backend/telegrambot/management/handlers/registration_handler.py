@@ -147,6 +147,14 @@ def reg_city(update: Update, context: CallbackContext):
     except:
         pass
 
+    try:
+        telegram_username = update.effective_user.username
+    except:
+        telegram_username = 'anon'
+
+    if telegram_username is None:
+        telegram_username = 'anon'
+
     # Создание объекта пользователя Telegram
     TelegramUser.objects.create(
         username=context.user_data['name'],
@@ -154,7 +162,7 @@ def reg_city(update: Update, context: CallbackContext):
         phone_number=context.user_data['phone'],
         telegram_id=update.effective_user.id,
         date_of_birth=context.user_data['birthday'],
-        telegram_username=update.effective_user.username,
+        telegram_username=telegram_username,
         telegram_img=image
     )
 

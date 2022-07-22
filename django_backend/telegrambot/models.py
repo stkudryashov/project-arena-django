@@ -7,7 +7,7 @@ class TelegramUser(models.Model):
     """Модель пользователя Telegram бота"""
 
     username = models.CharField(max_length=128, verbose_name='Имя пользователя')
-    telegram_username = models.CharField(max_length=128, verbose_name='Telegram')
+    telegram_username = models.CharField(max_length=128, verbose_name='Telegram', blank=True, null=True)
 
     phone_number = models.CharField(max_length=32, verbose_name='Номер телефона')
     telegram_img = models.ImageField(upload_to='users/', blank=True, verbose_name='Фото')
@@ -21,7 +21,7 @@ class TelegramUser(models.Model):
     is_banned = models.BooleanField(default=False, verbose_name='Статус блокировки')
 
     def __str__(self):
-        return f'{self.telegram_username}'
+        return f'{self.telegram_username}-{self.id}'
 
     class Meta:
         verbose_name = 'Пользователь'
