@@ -11,16 +11,36 @@ from telegrambot.management.tools import get_user_or_notify
 from telegrambot.models import TelegramUser
 
 
-def get_user_games(update: Update, context: CallbackContext, user: TelegramUser = None, last_id=None):
-    current_game = None
+def user_games_list(update: Update, context: CallbackContext):
+    user = TelegramUser.objects.get(telegram_id=update.effective_user.id)
 
-    if last_id:
-        current_game = TelegramUserGame.objects.filter(user=user, pk__gt=last_id).exclude(
-            status='refused').exclude(game__status__in=['is_over', 'canceled']).first()
+    current_games = TelegramUserGame.objects.filter(user=user).exclude(
+            status='refused').exclude(game__status__in=['is_over', 'canceled'])
 
-    if current_game is None:
-        current_game = TelegramUserGame.objects.filter(user=user).exclude(
-            status='refused').exclude(game__status__in=['is_over', 'canceled']).first()
+    if not current_games.exists():
+        update.effective_message.reply_text(Knowledge.objects.get(language='RU').my_games_no_games)
+        return
+
+    keyboard = []
+
+    message = 'Список твоих игр'
+
+    for game in current_games.order_by('id'):
+        date = dateformat.format(game.game.datetime, 'd E')
+        time = dateformat.time_format(game.game.datetime, 'H:i')
+
+        keyboard.append(
+            [InlineKeyboardButton(f'{date} {time} - {game.game.arena.title} - {game.game.price}',
+                                  callback_data=f'MyGames view {game.id}')]
+        )
+
+    keyboard = InlineKeyboardMarkup(keyboard)
+
+    update.effective_message.reply_text(message, reply_markup=keyboard)
+
+
+def get_user_games(update: Update, context: CallbackContext, game_id=None):
+    current_game = TelegramUserGame.objects.filter(id=game_id).first()
 
     if current_game is None:
         update.effective_message.reply_text(Knowledge.objects.get(language='RU').my_games_no_games)
@@ -37,10 +57,6 @@ def get_user_games(update: Update, context: CallbackContext, user: TelegramUser 
                                  callback_data=f'MyGames leave {current_game.id}'),
         ]
     ]
-
-    if user.games.exclude(status='refused').count() > 1:
-        buttons.append([InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_next,
-                                             callback_data=f'MyGames next {current_game.id}')])
 
     if game.arena.photos.exists():
         update.effective_message.reply_photo(game.arena.photos.first().photo, message,
@@ -98,7 +114,7 @@ def user_leave_game(update: Update, context: CallbackContext, user: TelegramUser
 
 @get_user_or_notify
 def show_first_game(update: Update, context: CallbackContext, user: TelegramUser):
-    get_user_games(update, context, user)
+    user_games_list(update, context)
 
 
 @get_user_or_notify
@@ -114,16 +130,13 @@ def _user_game_handler(update: Update, context: CallbackContext, user: TelegramU
     if command == 'leave':
         last_id = button_data[2]
         user_leave_game(update, context, user, last_id)
-
-    elif command == 'next':
-        last_id = button_data[2]
-        get_user_games(update, context, user, last_id)
-
+        button_press.message.delete()
     elif command == 'about':
         last_id = button_data[2]
         get_about(update, context, user, last_id)
-
-    button_press.message.delete()
+    elif command == 'view':
+        last_id = button_data[2]
+        get_user_games(update, context, last_id)
 
 
 def get_user_games_handlers():

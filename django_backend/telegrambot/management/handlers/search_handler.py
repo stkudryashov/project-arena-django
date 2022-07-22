@@ -14,9 +14,7 @@ from django.utils import dateformat
 import telegram
 
 
-def search_games(update: Update, context: CallbackContext, last_id=None, is_back=False):
-    """Поиск игры и вывод информации о ней"""
-
+def search_games_list(update: Update, context: CallbackContext):
     user = TelegramUser.objects.get(telegram_id=update.effective_user.id)
 
     search_query = Q(
@@ -25,13 +23,34 @@ def search_games(update: Update, context: CallbackContext, last_id=None, is_back
         status='pending'
     )
 
-    if last_id:
-        if is_back:
-            search_query &= Q(pk__lt=last_id)
-        else:
-            search_query &= Q(pk__gt=last_id)
+    current_games = Game.objects.filter(search_query).exclude(players__user=user)
 
-    current_game = Game.objects.filter(search_query).exclude(players__user=user).order_by('id').first()
+    if not current_games.exists():
+        update.effective_message.reply_text(Knowledge.objects.get(language='RU').msg_games_empty)
+        return
+
+    keyboard = []
+
+    message = 'Список доступных игр'
+
+    for game in current_games.order_by('id'):
+        date = dateformat.format(game.datetime, 'd E')
+        time = dateformat.time_format(game.datetime, 'H:i')
+
+        keyboard.append(
+            [InlineKeyboardButton(f'{date} {time} - {game.arena.title} - {game.price}',
+                                  callback_data=f'SearchView {game.id}')]
+        )
+
+    keyboard = InlineKeyboardMarkup(keyboard)
+
+    update.effective_message.reply_text(message, reply_markup=keyboard)
+
+
+def search_games(update: Update, context: CallbackContext, game_id=None):
+    """Поиск игры и вывод информации о ней"""
+
+    current_game = Game.objects.filter(id=game_id).first()
 
     if current_game is None:
         update.effective_message.reply_text(Knowledge.objects.get(language='RU').msg_games_empty)
@@ -43,11 +62,7 @@ def search_games(update: Update, context: CallbackContext, last_id=None, is_back
         [[InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_about,
                                callback_data=f'SearchAbout {current_game.id}'),
           InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_enter,
-                               callback_data=f'SearchEnter {current_game.id}')],
-         [InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_back,
-                               callback_data=f'SearchBack {current_game.id}'),
-          InlineKeyboardButton(Knowledge.objects.get(language='RU').btn_search_next,
-                               callback_data=f'SearchNext {current_game.id}')]]
+                               callback_data=f'SearchEnter {current_game.id}')]]
     )
 
     if current_game.arena.photos.exists():
@@ -166,31 +181,31 @@ def search_callbacks(update: Update, context: CallbackContext):
 
     button_press = update.callback_query
 
-    if 'SearchNext' in button_press.data:
-        try:
-            button_press.message.delete()
-        except telegram.TelegramError:
-            pass
-        finally:
-            last_id = button_press.data.split()[1]
-
-            if last_id == 'None':
-                last_id = None
-
-            search_games(update, context, last_id)
-    elif 'SearchBack' in button_press.data:
-        try:
-            button_press.message.delete()
-        except telegram.TelegramError:
-            pass
-        finally:
-            last_id = button_press.data.split()[1]
-
-            if last_id == 'None':
-                last_id = None
-
-            search_games(update, context, last_id, is_back=True)
-    elif 'SearchEnter' in button_press.data:
+    # if 'SearchNext' in button_press.data:
+    #     try:
+    #         button_press.message.delete()
+    #     except telegram.TelegramError:
+    #         pass
+    #     finally:
+    #         last_id = button_press.data.split()[1]
+    #
+    #         if last_id == 'None':
+    #             last_id = None
+    #
+    #         search_games(update, context, last_id)
+    # elif 'SearchBack' in button_press.data:
+    #     try:
+    #         button_press.message.delete()
+    #     except telegram.TelegramError:
+    #         pass
+    #     finally:
+    #         last_id = button_press.data.split()[1]
+    #
+    #         if last_id == 'None':
+    #             last_id = None
+    #
+    #         search_games(update, context, last_id, is_back=True)
+    if 'SearchEnter' in button_press.data:
         try:
             button_press.message.delete()
         except telegram.TelegramError:
@@ -205,6 +220,14 @@ def search_callbacks(update: Update, context: CallbackContext):
         finally:
             game_id = button_press.data.split()[1]
             search_about(update, context, game_id)
+    elif 'SearchView' in button_press.data:
+        try:
+            pass
+        except telegram.TelegramError:
+            pass
+        finally:
+            game_id = button_press.data.split()[1]
+            search_games(update, context, game_id)
     elif 'SearchNotify' in button_press.data:
         try:
             button_press.message.delete()

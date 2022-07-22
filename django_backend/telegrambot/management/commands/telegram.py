@@ -45,7 +45,7 @@ class Command(BaseCommand):
                                               profile_handler.start_change))
 
         dispatcher.add_handler(CallbackQueryHandler(search_handler.search_callbacks, pattern=r'^Search'))
-        dispatcher.add_handler(MessageHandler(Filters.text([buttons.btn_future_games]), search_handler.search_games))
+        dispatcher.add_handler(MessageHandler(Filters.text([buttons.btn_future_games]), search_handler.search_games_list))
 
         dispatcher.add_handler(MessageHandler(Filters.text([buttons.btn_notifications_on,
                                                             buttons.btn_notifications_off]), notification_change))
