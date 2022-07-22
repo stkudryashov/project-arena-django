@@ -24,7 +24,7 @@ class GameAdmin(admin.ModelAdmin):
             'fields': ('max_players', 'free_space', 'reserve_count')
         }),
         ('Цена участия', {
-            'fields': ('price',)
+            'fields': ('price', 'level')
         }),
         ('Место проведения', {
             'fields': ('arena',)

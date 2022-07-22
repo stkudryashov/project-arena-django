@@ -36,6 +36,14 @@ class Game(models.Model):
 
     status = models.CharField(choices=GAME_STATUS, max_length=32, verbose_name='Статус')
 
+    GAME_LEVEL = (
+        ('Новичок', 'Новичок'),
+        ('Средний', 'Средний'),
+        ('Высокий', 'Высокий'),
+    )
+
+    level = models.CharField(choices=GAME_LEVEL, max_length=32, verbose_name='Уровень игры')
+
     send_t = models.DateTimeField(blank=True, null=True, verbose_name='Старт уведомлений')
     rule_n = models.IntegerField(blank=True, null=True, verbose_name='Получат уведомления')
 
@@ -90,6 +98,11 @@ class Game(models.Model):
 
             all_users_ids = set()
 
+            levels_ids = list(set(UserCharacteristic.objects.filter(
+                characteristic__title='Уровень игры',
+                value=self.level
+            ).values_list('user__telegram_id', flat=True)))
+
             for rule in RuleCharacteristic.objects.all().order_by('rule__time'):
                 users_ids = set()
 
@@ -98,7 +111,8 @@ class Game(models.Model):
                         characteristic=rule.characteristic,
                         value=rule.value,
                         user__notifications=True,
-                        user__city=self.arena.city
+                        user__city=self.arena.city,
+                        user__telegram_id__in=levels_ids
                     ).values_list('user__telegram_id', flat=True))
 
                 if rule.query == 'lt':
@@ -108,7 +122,8 @@ class Game(models.Model):
                         characteristic=rule.characteristic,
                         int_value__lt=int(rule.value),
                         user__notifications=True,
-                        user__city=self.arena.city
+                        user__city=self.arena.city,
+                        user__telegram_id__in=levels_ids
                     ).values_list('user__telegram_id', flat=True))
 
                 if rule.query == 'gt':
@@ -118,7 +133,8 @@ class Game(models.Model):
                         characteristic=rule.characteristic,
                         int_value__gt=int(rule.value),
                         user__notifications=True,
-                        user__city=self.arena.city
+                        user__city=self.arena.city,
+                        user__telegram_id__in=levels_ids
                     ).values_list('user__telegram_id', flat=True))
 
                 users_ids = users_ids - all_users_ids
